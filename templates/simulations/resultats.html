@@ -1,0 +1,8 @@
+{% for field in individuform %}
+    <div class="fieldWrapper">
+        {{ field.errors }}
+        {{ field.label_tag }}: {{ field }}
+    </div>
+{% endfor %}
+
+<a href="/simulations/nouvelle_simulation/">Modifier la simulation ?</a>

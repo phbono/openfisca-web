@@ -1,0 +1,19 @@
+<form action="/simulations/resultats/" method="post">{% csrf_token %}
+    {% for field in individuform %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}
+    
+    {% for field in individuform %}
+		{% if field.label in 'foyer*' %}
+       		<div class="fieldWrapper">
+       			{{ field.errors }}
+           		{{ field.label_tag }}: {{ field }}
+        	</div>
+        {% endif %}
+	{% endfor %}
+    
+    <p><input type="submit" value="Lancer la simulation" /></p>
+</form>
