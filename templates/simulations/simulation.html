@@ -6,7 +6,7 @@
         </div>
     {% endfor %}
     
-    {% for field in individuform %}
+   {% comment %} {% for field in individuform %}
 		{% if field.label in 'foyer*' %}
        		<div class="fieldWrapper">
        			{{ field.errors }}
@@ -14,6 +14,7 @@
         	</div>
         {% endif %}
 	{% endfor %}
-    
+    {% endcomment %}
+	
     <p><input type="submit" value="Lancer la simulation" /></p>
 </form>

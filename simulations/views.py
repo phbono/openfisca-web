@@ -13,7 +13,7 @@ def simulation(request):
         if indivform.is_valid(): # All validation rules pass
             indivform.cleaned_data
             #print form
-            #form = facade(form) # je fais appel à la façade et je met le résultat dans la variable form qui s'appelera résultat plus tard
+            indivform = facade(indivform) # je fais appel à la façade et je met le résultat dans la variable form qui s'appelera résultat plus tard
             #return HttpResponseRedirect(reverse('simulations.views.resultats', form)) # Redirect after POST
             return render_to_response('simulations/resultats.html', {'individuform': indivform})
     else:

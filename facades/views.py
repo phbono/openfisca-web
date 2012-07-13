@@ -1,11 +1,28 @@
+# -*-coding:Utf-8 -*
+
 from simulations.models import IndividuForm
+from src.test import Simu
 
 def facade(formulairerempli):
-    variable_1bis = formulairerempli['variable_1'].value() # recuperation de la valeur de la variable 1
-    variable_1bis = int(variable_1bis) # reconversion sous forme d'entier
-    variable_1bis += 1 # modification de la variable
-    variable_2bis = formulairerempli['variable_2'].value()
-    variable_3bis = formulairerempli['variable_3'].value()
-    data = {'variable_1': variable_1bis, 'variable_2': variable_2bis, 'variable_3': variable_3bis}
+    
+    nobis = formulairerempli['no'].value()
+    nobis = int(nobis)
+    
+    nodeclarbis = formulairerempli['nodeclar'].value()
+    nodeclarbis = int(nodeclarbis)
+    
+    testbis = formulairerempli['test'].value()
+    testbis = int(testbis)
+    
+    test2bis = formulairerempli['test2'].value()
+    test2bis = int(test2bis)
+    
+    nofambis = formulairerempli['nofam'].value()
+    nofambis = int(nofambis)
+    
+    variableopenfisca = Simu()
+    print variableopenfisca
+    
+    data = {'no': nobis, 'nodeclar': nodeclarbis, 'test': testbis, 'test2': test2bis, 'nofam': nofambis}
     formulairemodifie = IndividuForm(data)
     return formulairemodifie
