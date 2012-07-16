@@ -1,7 +1,7 @@
 # -*-coding:Utf-8 -*
 
 from simulations.models import IndividuForm
-from src.test import Simu
+#from srcopen.lanceur import Simu, main
 
 def facade(formulairerempli):
     
@@ -19,9 +19,6 @@ def facade(formulairerempli):
     
     nofambis = formulairerempli['nofam'].value()
     nofambis = int(nofambis)
-    
-    variableopenfisca = Simu()
-    print variableopenfisca
     
     data = {'no': nobis, 'nodeclar': nodeclarbis, 'test': testbis, 'test2': test2bis, 'nofam': nofambis}
     formulairemodifie = IndividuForm(data)
