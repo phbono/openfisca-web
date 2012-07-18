@@ -29,9 +29,8 @@ from parametres.paramData import XmlReader, Tree2Object
 from france.data import InputTable
 from france.model import ModelFrance
 from core.datatable import DataTable, SystemSf
-
-
-
+import sys
+import getopt
 
 class Simu(object):
     def __init__(self):
@@ -71,12 +70,19 @@ class Simu(object):
 
 
 def main():
-    
+#    if argv is None:
+#        argv = sys.argv
+#    try:
+#        args = getopt.getopt(argv[1:])
+#    except getopt.error, msg:
+#        print msg
+#        sys.exit(2)
+#    for arg in args:
 
     simu = Simu()
-    simu.set_date("2006-01-01")
-    msg = simu.scenario.check_consistency()
-    if msg:
+    simu.set_date("2010-01-01")
+    msg1 = simu.scenario.check_consistency()
+    if msg1:
         print 'inconsistent scenario'
     simu.set_param()
     print simu.param_courant
@@ -87,9 +93,6 @@ def main():
             for child2 in child.children:
                 print child2.code
                 print child2._vals
-    
-    
-    
 
 if __name__=='__main__':
-    main()
+    sys.exit(main())

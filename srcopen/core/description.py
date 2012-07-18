@@ -50,9 +50,9 @@ class MetaModelDescription(type):
         columns_list = columns.values()
         columns_list.sort(key=lambda x:x._order)
         col_numbers = set([x._order for x in columns_list])
-        for i in range(max(col_numbers)):
-            if not i in col_numbers:
-                raise Exception("The column before %s in class %s is defined twice"% (columns_list[i].name, name))
+#        for i in range(max(col_numbers)):
+#            if not i in col_numbers:
+#                raise Exception("The column before %s in class %s is defined twice"% (columns_list[i].name, name))
         
         dct["columns"] = columns_list
         return super_new(cls, name, bases, dct)
