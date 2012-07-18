@@ -90,7 +90,7 @@ def handle_output_xml(doc, tree, model, unit = 'men'):
             
 def gen_output_data(model):
 
-    _doc = minidom.parse('data/totaux.xml')
+    _doc = minidom.parse('/home/florent/workspace/openfisca/srcopen/data/totaux.xml')
     tree = OutNode('root', 'root')
 
     handle_output_xml(_doc, tree, model)

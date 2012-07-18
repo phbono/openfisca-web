@@ -30,7 +30,6 @@ from france.data import InputTable
 from france.model import ModelFrance
 from core.datatable import DataTable, SystemSf
 import sys
-import getopt
 
 class Simu(object):
     def __init__(self):
@@ -50,7 +49,7 @@ class Simu(object):
         '''
         '''
         if fname == None:
-            fname='data/param.xml'
+            fname='/home/florent/workspace/openfisca/srcopen/data/param.xml'
         
         reader = XmlReader(fname, self._date)
         rootNode = reader.tree
@@ -66,19 +65,11 @@ class Simu(object):
         population_courant = SystemSf(ModelFrance, self.param_courant, self.param_default)
         population_courant.set_inputs(input_table)
         data_courant = gen_output_data(population_courant)
+        self.results = data_courant
         return data_courant
 
 
 def main():
-#    if argv is None:
-#        argv = sys.argv
-#    try:
-#        args = getopt.getopt(argv[1:])
-#    except getopt.error, msg:
-#        print msg
-#        sys.exit(2)
-#    for arg in args:
-
     simu = Simu()
     simu.set_date("2010-01-01")
     msg1 = simu.scenario.check_consistency()
@@ -93,6 +84,7 @@ def main():
             for child2 in child.children:
                 print child2.code
                 print child2._vals
+    
 
 if __name__=='__main__':
     sys.exit(main())
