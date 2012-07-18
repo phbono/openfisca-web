@@ -56,7 +56,7 @@ class DataTable(object):
         self.XAXIS = CONF.get('simulation', 'xaxis') + 'i'
         
         # Build the description attribute        
-        if True:
+        if type(model_description) == type(ModelDescription):
             descr = model_description()
             self.description = Description(descr.columns)
         else:
