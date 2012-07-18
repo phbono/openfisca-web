@@ -8,6 +8,3 @@ src/build
 src/main.cfg
 src/data/final.csv
 
-openfisca
-manage.py
-sqlite.db
