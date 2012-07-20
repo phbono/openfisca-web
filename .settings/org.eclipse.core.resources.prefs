@@ -1,8 +1,9 @@
 eclipse.preferences.version=1
 encoding//facades/lanceur.py=utf-8
 encoding//facades/views.py=Utf-8
-encoding//simulations/fonctiontest.py=Utf-8
 encoding//simulations/models.py=Utf-8
 encoding//simulations/views.py=Utf-8
+encoding//srcopen/Config.py=utf-8
 encoding//srcopen/core/utils.py=utf-8
 encoding//srcopen/parametres/paramData.py=utf-8
+encoding//srcopen/widgets/Composition.py=utf-8
