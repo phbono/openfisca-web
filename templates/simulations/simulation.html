@@ -1,3 +1,8 @@
+
+{% comment %} partie pour un individu {% endcomment %}
+
+{% comment %}
+
 <form action="/simulations/resultats/" method="post">{% csrf_token %}
     {% for field in individuform %}
         <div class="fieldWrapper">
@@ -6,7 +11,7 @@
         </div>
     {% endfor %}
     
-   {% comment %} {% for field in individuform %}
+	{% for field in individuform %}
 		{% if field.label in 'foyer*' %}
        		<div class="fieldWrapper">
        			{{ field.errors }}
@@ -14,7 +19,21 @@
         	</div>
         {% endif %}
 	{% endfor %}
-    {% endcomment %}
 	
     <p><input type="submit" value="Lancer la simulation" /></p>
 </form>
+
+{% end comment %}
+
+
+
+{% comment %} partie pour plusieurs individus {% endcomment %}
+
+<form action="/simulations/resultats/" method="post">{% csrf_token %}
+    <table>
+        {{ formset }}
+    </table>
+	<p><input type="submit" value="Lancer la simulation" /></p>
+	
+</form>
+    

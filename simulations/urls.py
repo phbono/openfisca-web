@@ -4,5 +4,6 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns('',
     url(r'^nouvelle_simulation/$', 'simulations.views.simulation'),
-    url(r'^resultats/$', 'simulations.views.simulation')
+    url(r'^resultats/$', 'simulations.views.simulation'),
+    url(r'^choixnombreindividu/$', 'simulations.views.choixnombreindividu'),
 )
