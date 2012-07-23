@@ -1,12 +1,11 @@
 # -*-coding:Utf-8 -*
 
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect, render_to_response
+from django.http import HttpResponse
+from django.shortcuts import render
 from mahdi.models import IndividualForm
 from django.forms.formsets import formset_factory, BaseFormSet
 from datetime import datetime     
 from core.utils import Scenario
-from django.core.urlresolvers import reverse
 
 class BaseScenarioFormSet(BaseFormSet):
     def clean(self):
@@ -23,29 +22,40 @@ def index(request):
 
 def menage(request):
     
-    delete = False
-    if delete: 
-        del request.session['scenario']
-
     scenario = request.session.get('scenario',default=None)
     if scenario == None:
         print 'scenario is None'
         scenario = Scenario()
 
     if request.method == 'POST':    # ADD
-        ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
-        formset = ScenarioFormSet(request.POST)
-        for form in formset.cleaned_data:
-            print form
-        print formset.is_valid()
-        if formset.is_valid():
 
-            scenario = formset2scenario(formset)
-            scenario.addIndiv(0, datetime(1975,1,1).date(), 'vous', 'chef')
-            print scenario
+        if 'reset' in request.POST:
+            del request.session['scenario']
+            scenario = Scenario()
             formset = scenario2formset(scenario)
-            request.session['scenario'] = scenario        
-            return render(request, 'mahdi/menage.html', {'formset' : formset})
+            request.session['scenario'] = scenario
+
+        else:
+            ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
+            formset = ScenarioFormSet(request.POST)
+            
+            for form in formset.cleaned_data:
+                print form
+            if formset.is_valid():
+                scenario = formset2scenario(formset)
+        
+                if 'submit' in request.POST:
+                    print 'submit'
+                    return #(request, 'mahdi/menage.html', {'formset' : formset})
+        
+                if 'add' in request.POST:
+                    scenario.addIndiv(scenario.nbIndiv(), datetime(1975,1,1).date(), 'vous', 'chef')
+                if 'remove' in request.POST:
+                    scenario.rmvIndiv(scenario.nbIndiv()-1)
+                        
+                print scenario
+                formset = scenario2formset(scenario)
+                request.session['scenario'] = scenario
 
     else:
         
@@ -58,7 +68,7 @@ def menage(request):
 def formset2scenario(formset):
     scenario = Scenario()
     for form in formset.cleaned_data:
-        scenario.addIndiv( form['noi'], form['birth'], form['quifoy'], form['quifam'])        
+        scenario.addIndiv( form['noi']-1, form['birth'], form['quifoy'], form['quifam'])        
     return scenario
 
 
