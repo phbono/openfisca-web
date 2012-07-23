@@ -23,7 +23,8 @@ def index(request):
 #    return render_to_response('mahdi/menage.html', {'formset': form})
 
 def menage(request):
-    
+
+
     scenario = request.session.get('scenario',default=None)
     if scenario == None:
         print 'scenario is None'
@@ -41,8 +42,8 @@ def menage(request):
             ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
             formset = ScenarioFormSet(request.POST)
             
-#            for form in formset.cleaned_data:
-#                print form
+            for form in formset.cleaned_data:
+                print form
             if formset.is_valid():
                 scenario = formset2scenario(formset)
         
@@ -51,7 +52,7 @@ def menage(request):
                 if 'remove' in request.POST:
                     scenario.rmvIndiv(scenario.nbIndiv()-1)
                         
-#                print scenario
+                print scenario
                 formset = scenario2formset(scenario)
                 request.session['scenario'] = scenario
                 
