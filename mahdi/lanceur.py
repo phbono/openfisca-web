@@ -22,6 +22,9 @@ This file is part of openFisca.
 """
 
 import os, inspect
+from datetime import date
+
+from django.forms.formsets import formset_factory, BaseFormSet
 
 from core.utils import gen_output_data
 from core.utils import Scenario
@@ -31,15 +34,32 @@ from france.data import InputTable
 from france.model import ModelFrance
 from core.datatable import DataTable, SystemSf
 
+from mahdi.models import IndividualForm
+
+class BaseScenarioFormSet(BaseFormSet):
+#    def clean(self):
+#        """Checks consistency of a formset"""
+#        if any(self.errors):
+#            # Don't bother validating the formset unless each form is valid on its own
+#            return
+    
+    def get_scenario(self):
+        scenario = Scenario()
+        for form in self.cleaned_data:
+            noi, birth = form['noi']-1, form['birth']
+            idfoy, quifoy, idfam, quifam = form['idfoy']-1, form['quifoy'], form['idfam']-1, form['quifam']
+            scenario.addIndiv(noi, birth, quifoy, quifam)
+            scenario._assignPerson(noi, quifoy = quifoy, foyer = idfoy, quifam = quifam, famille = idfam)
+        return scenario
+
+
 class Simu(object):
     def __init__(self, scenario=None, root_dir=None):
         super(Simu, self).__init__()
 
-        self.set_config(directory=root_dir)
-
-        
+        self.set_config(directory=root_dir)        
         self.set_scenario(scenario)
-        self.scenario.genNbEnf()
+        #self.scenario.genNbEnf()
         
         
     def set_config(self, directory = None, nmen=1):
@@ -97,9 +117,63 @@ class Simu(object):
         return data_courant
 
 
+class Compo(object):
+    def __init__(self):
+        super(Compo, self).__init__()
+        self.scenario = Scenario()
+        
+
+
+    def nbRow(self):
+        return self.scenario.nbIndiv()
+
+    def addPerson(self):
+        
+        noi = self.nbRow()
+        print noi
+        if noi == 1: self.scenario.addIndiv(noi, birth = date(1975,1,1), quifoy = 'conj', quifam = 'part')
+        else:        self.scenario.addIndiv(noi, birth = date(2000,1,1), quifoy = 'pac' , quifam = 'enf')
+        print self.scenario
+
+    def rmvPerson(self, noi = None):
+        pass
+
+    def gen_formset(self):
+        
+        scenario = self.scenario
+        print scenario
+        scenario_var_list = ['noi', 'birth', 'idfoy', 'quifoy', 'idfam', 'quifam']
+        
+        convert = dict(idfoy = "noidec", idfam ="noichef")
+        zero_start = [ "idfoy", "idfam", "noi"]
+        initial = []    
+    
+        for noi, indiv in scenario.indiv.iteritems():
+            new_form = {}
+            for var in scenario_var_list:
+                if var == "noi":
+                    new_form[var] = noi
+                elif var in convert.keys():
+                    new_form[var] = indiv[convert[var]]
+                else:
+                    new_form[var] = indiv[var]       
+                if var in zero_start:
+                    new_form[var] += 1
+                    
+            print new_form        
+            initial.append(new_form)
+            
+            
+        ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
+        return ScenarioFormSet(initial=initial)
+
+
+
+
+
+
 def main():
     simu = Simu()
-    simu.set_openfica_root_dir()
     simu.set_date()
     msg = simu.scenario.check_consistency()
     if msg:
