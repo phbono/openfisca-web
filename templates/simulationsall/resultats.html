@@ -1,0 +1,20 @@
+{% comment %} Partie pour un individu {% endcomment %}
+
+{% comment %}
+
+{% for field in individuform %}
+    <div class="fieldWrapper">
+        {{ field.errors }}
+        {{ field.label_tag }}: {{ field }}
+    </div>
+{% endfor %}
+
+{% endcomment %}
+
+{% comment %} partie pour plusieurs individus {% endcomment %}
+
+<table>
+    {{ formset }}
+</table>
+
+<a href="/simulationsall/nouvelle_simulation/">Modifier la simulation ?</a>
