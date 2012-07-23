@@ -6,6 +6,8 @@ from mahdi.models import IndividualForm
 from django.forms.formsets import formset_factory, BaseFormSet
 from datetime import datetime     
 from core.utils import Scenario
+from mahdi.lanceur import Simu
+
 
 class BaseScenarioFormSet(BaseFormSet):
     def clean(self):
@@ -27,7 +29,7 @@ def menage(request):
         print 'scenario is None'
         scenario = Scenario()
 
-    if request.method == 'POST':    # ADD
+    if request.method == 'POST':
 
         if 'reset' in request.POST:
             del request.session['scenario']
@@ -39,24 +41,27 @@ def menage(request):
             ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
             formset = ScenarioFormSet(request.POST)
             
-            for form in formset.cleaned_data:
-                print form
+#            for form in formset.cleaned_data:
+#                print form
             if formset.is_valid():
                 scenario = formset2scenario(formset)
-        
-                if 'submit' in request.POST:
-                    print 'submit'
-                    return #(request, 'mahdi/menage.html', {'formset' : formset})
         
                 if 'add' in request.POST:
                     scenario.addIndiv(scenario.nbIndiv(), datetime(1975,1,1).date(), 'vous', 'chef')
                 if 'remove' in request.POST:
                     scenario.rmvIndiv(scenario.nbIndiv()-1)
                         
-                print scenario
+#                print scenario
                 formset = scenario2formset(scenario)
                 request.session['scenario'] = scenario
-
+                
+                if 'submit' in request.POST:
+                    scenario.genNbEnf()
+                    ok = True
+                    ok = build_simu(scenario)
+                    print 'is it ok ? :', ok
+                    #return (request, 'mahdi/menage.html', {'formset' : formset})    
+            
     else:
         
         formset = scenario2formset(scenario)
@@ -65,10 +70,27 @@ def menage(request):
     return render(request, 'mahdi/menage.html', {'formset' : formset})
 
 
+
+def build_simu(scenario):
+    simu = Simu(scenario=scenario)
+    simu.set_openfica_root_dir()
+    simu.set_date()
+    msg = simu.scenario.check_consistency()
+    if msg:
+        print 'inconsistent scenario'
+    simu.set_param()
+    x = simu.compute()
+    for child in x.children:
+            for child2 in child.children:
+                print child2.code
+                print child2._vals
+    return True
+
 def formset2scenario(formset):
     scenario = Scenario()
     for form in formset.cleaned_data:
-        scenario.addIndiv( form['noi']-1, form['birth'], form['quifoy'], form['quifam'])        
+        noi, birth, quifoy, quifam = form['noi']-1, form['birth'], form['quifoy'], form['quifam']
+        scenario.addIndiv(noi, birth, quifoy, quifam)
     return scenario
 
 
@@ -95,5 +117,7 @@ def scenario2formset(scenario):
         
     ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
     return ScenarioFormSet(initial=initial)
+
+
 
 #    for indinv in formset['noiindiv']

@@ -15,7 +15,7 @@ from django.forms.fields import CheckboxInput
 
 
 QUIFOY = (('vous', 'Vous'), ('conj', 'Conjoint'), ('pac', 'Personne à charge'))
-QUIFAM = (('parent_1', 'parent 1'), ('parent_2', 'parent 2'), ('enfant', 'enfant'))
+QUIFAM = (('chef', 'parent 1'), ('part', 'parent 2'), ('enf', 'enfant'))
 
 register = template.Library()
 
