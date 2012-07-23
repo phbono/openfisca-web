@@ -11,3 +11,4 @@ src/data/final.csv
 manage.py
 sqlite.db
 openfisca
+web
