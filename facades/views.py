@@ -1,6 +1,6 @@
 # -*-coding:Utf-8 -*
 
-from simulations.models import IndividuForm
+from simulationsall.models import IndividuForm
 from facades import lanceur
 
 def facade(formulairerempli):
