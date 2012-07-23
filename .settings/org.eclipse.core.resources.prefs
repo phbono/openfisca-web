@@ -1,18 +1,19 @@
+=\=\=\=\=\=\=
+<<<<<<<=HEAD
+>>>>>>>=5afe6445e659e8842ae56f2e5d955b127acd2cdf
 eclipse.preferences.version=1
 encoding//facades/lanceur.py=utf-8
 encoding//facades/views.py=Utf-8
-<<<<<<< HEAD
-encoding//simulation/models.py=Utf-8
-encoding//simulation/views.py=Utf-8
-encoding//simulationsall/models.py=Utf-8
-encoding//simulationsall/views.py=Utf-8
-=======
 encoding//mahdi/lanceur.py=utf-8
 encoding//mahdi/models.py=Utf-8
 encoding//mahdi/views.py=Utf-8
+encoding//mahdi/views_old.py=Utf-8
+encoding//simulation/models.py=Utf-8
+encoding//simulation/views.py=Utf-8
 encoding//simulations/models.py=Utf-8
 encoding//simulations/views.py=Utf-8
->>>>>>> 5afe6445e659e8842ae56f2e5d955b127acd2cdf
+encoding//simulationsall/models.py=Utf-8
+encoding//simulationsall/views.py=Utf-8
 encoding//srcopen/Config.py=utf-8
 encoding//srcopen/core/utils.py=utf-8
 encoding//srcopen/france/data.py=utf-8
