@@ -21,8 +21,7 @@ This file is part of openFisca.
     along with openFisca.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime
-import os
+import os, inspect
 
 from core.utils import gen_output_data
 from core.utils import Scenario
@@ -33,25 +32,31 @@ from france.model import ModelFrance
 from core.datatable import DataTable, SystemSf
 
 class Simu(object):
-    def __init__(self, scenario=None):
+    def __init__(self, scenario=None, root_dir=None):
         super(Simu, self).__init__()
 
+        self.set_config(directory=root_dir)
+
+        
         self.set_scenario(scenario)
         self.scenario.genNbEnf()
         
-    def set_openfica_root_dir(self, directory = None):
+        
+    def set_config(self, directory = None, nmen=1):
         '''
         Sets the directory where to find the openfisca source and adjust some directories
-        TODO à améliorer
         '''
         if directory == None:
-            self.openfica_root_dir = "C:/Users/Utilisateur/My Documents/Aptana Studio 3 Workspace/web/srcopen"
-#            self.openfica_root_dir = "/home/florent/workspace/openfisca/srcopen/"
-        else:
-            self.openfica_root_dir = directory    
-        
-        CONF.set('paths', 'data_dir',os.path.join(self.openfica_root_dir,'data'))
-        
+#            dir = "C:/Users/Utilisateur/My Documents/Aptana Studio 3 Workspace/web/srcopen"
+#            dir = "/home/florent/workspace/openfisca/srcopen/"
+            cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
+            predirectory = os.path.dirname(cmd_folder)
+            directory = os.path.join(predirectory,'srcopen')
+
+        CONF.set('paths', 'data_dir',os.path.join(directory,'data'))
+        CONF.set('simulation', 'nmen',1)
+
+         
     def set_scenario(self, scenario=None):
         if scenario is None:
             self.scenario = Scenario()
