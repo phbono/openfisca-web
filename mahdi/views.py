@@ -2,11 +2,10 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from mahdi.models import IndividualForm
+from mahdi.models import IndividualForm, Declar1Form
 from django.forms.formsets import formset_factory
 
 from mahdi.lanceur import Simu, Compo, BaseScenarioFormSet
-
 
 
 
@@ -60,7 +59,24 @@ def menage(request):
     return render(request, 'mahdi/menage.html', {'formset' : formset})
 
 
+def declar01(request):
 
+    form = Declar1Form() 
+#    print form.is_valid()
+#    if form.is_valid():
+#        print form.cleaned_data
+
+    if request.method == 'POST':
+#        if form.is_valid():
+        print 'POST'
+    else:
+        form = Declar1Form() 
+
+    return render(request, 'mahdi/declar01.html', {'form' : form})   
+        
+
+
+# MOVE this to somewhere else !
 def build_simu(scenario):
     simu = Simu(scenario=scenario)
     simu.set_date()
@@ -74,7 +90,6 @@ def build_simu(scenario):
                 print child2.code
                 print child2._vals
     return True
-
 
 
 
