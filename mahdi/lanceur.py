@@ -50,6 +50,7 @@ class BaseScenarioFormSet(BaseFormSet):
             idfoy, quifoy, idfam, quifam = form['idfoy']-1, form['quifoy'], form['idfam']-1, form['quifam']
             scenario.addIndiv(noi, birth, quifoy, quifam)
             scenario._assignPerson(noi, quifoy = quifoy, foyer = idfoy, quifam = quifam, famille = idfam)
+            
         return scenario
 
 
@@ -123,7 +124,6 @@ class Compo(object):
         self.scenario = Scenario()
         
 
-
     def nbRow(self):
         return self.scenario.nbIndiv()
 
@@ -133,6 +133,7 @@ class Compo(object):
         print noi
         if noi == 1: self.scenario.addIndiv(noi, birth = date(1975,1,1), quifoy = 'conj', quifam = 'part')
         else:        self.scenario.addIndiv(noi, birth = date(2000,1,1), quifoy = 'pac' , quifam = 'enf')
+        print 'scenario at the end of addPerson'
         print self.scenario
 
     def rmvPerson(self, noi = None):
@@ -141,6 +142,7 @@ class Compo(object):
     def gen_formset(self):
         
         scenario = self.scenario
+        print 'scenario at the beginning of gen_formset'
         print scenario
         scenario_var_list = ['noi', 'birth', 'idfoy', 'quifoy', 'idfam', 'quifam']
         
@@ -159,13 +161,25 @@ class Compo(object):
                     new_form[var] = indiv[var]       
                 if var in zero_start:
                     new_form[var] += 1
-                    
+            
+            print 'new_form for noi: ' + str(noi)        
             print new_form        
             initial.append(new_form)
             
             
         ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
-        return ScenarioFormSet(initial=initial)
+        
+        formset = ScenarioFormSet(initial=initial)
+        
+        print formset.is_valid()
+        if True: #formset.is_valid():
+            for form in formset.forms:
+                print form.is_valid()
+                if form.is_valid():
+                    print form.cleaned_data
+
+        
+        return formset
 
 
 

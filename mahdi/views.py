@@ -24,7 +24,8 @@ def menage(request):
     if request.method == 'POST':
 
         if 'reset' in request.POST:
-            del request.session['compo']
+            if 'compo' in request.session:
+                del request.session['compo']
             compo = Compo()
             formset = compo.gen_formset()
             request.session['compo'] = compo
@@ -32,22 +33,15 @@ def menage(request):
         else:
             ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
             formset = ScenarioFormSet(request.POST)
-            
-#            for form in formset.cleaned_data:
-#                print form
             if formset.is_valid():
-                scenario = formset.get_scenario()
+                compo.scenario = formset.get_scenario()
         
                 if 'add' in request.POST:
-                    #compo.scenario.addIndiv(scenario.nbIndiv(), datetime(1975,1,1).date(), 'vous', 'chef')
-                    print scenario
-                    print 'add'
                     compo.addPerson()
                     
                 if 'remove' in request.POST:
-                    compo.scenario.rmvIndiv(scenario.nbIndiv()-1)
-                        
-#                print scenario
+                    compo.scenario.rmvIndiv(compo.scenario.nbIndiv()-1)
+
                 formset = compo.gen_formset()
                 request.session['compo'] = compo
                 
