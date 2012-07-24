@@ -68,7 +68,7 @@ class Simu(object):
         Sets the directory where to find the openfisca source and adjust some directories
         '''
         if directory == None:
-#            dir = "C:/Users/Utilisateur/My Documents/Aptana Studio 3 Workspace/web/srcopen"
+#   TODO REMOVE         dir = "C:/Users/Utilisateur/My Documents/Aptana Studio 3 Workspace/web/srcopen"
 #            dir = "/home/florent/workspace/openfisca/srcopen/"
             cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
             predirectory = os.path.dirname(cmd_folder)
