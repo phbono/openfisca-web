@@ -1,0 +1,657 @@
+{% extends "home.html" %}
+{% load myTags %}
+
+{% block title %}Déclaration 5{% endblock %}
+
+{% block content %}
+<form class="principal" name="form3" method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <br />
+  <table border="0" width="100%" class="tableau">
+    <tr>
+    	<td nowrap="" width="14">&nbsp;</td>
+        <td colspan="4"> 
+        	<table cellspacing="0" cellpadding="0" border="0" width="100%">
+            	<tbody><tr> 
+                  <td nowrap="" width="1%"><span class="titre"><span class="titre00">VOS CHARGES</span></span></td>
+                  <td> 
+                    <table border="0" width="100%">
+                    	<tbody><tr> 
+                        <td height="4" background="/static/image/ligne01.gif"></td>
+                      </tr>
+            		    </tbody>
+            		</table></td>
+                </tr>
+              	</tbody>
+            </table>            
+        </td>
+    </tr>
+    <tr> 
+      <td width="14">&nbsp;</td>
+      <td width="451">&nbsp;</td>
+      <td width="224">&nbsp;</td>
+      <td width="303">&nbsp;</td>
+      <td width="158">&nbsp;</td>
+    </tr>
+    <tr> 
+      <td nowrap="" width="14">&nbsp;</td>
+      <td colspan="3" class="titre01"><span class="titre">&nbsp;CHARGES DÉDUCTIBLES</span></td>
+      <td align="right" width="158" valign="top" class="titre01">&nbsp;</td>
+    </tr>
+    <tr> 
+      <td width="14">&nbsp;</td>
+      <td colspan="3" class="fdcellule">CSG déductible calculée sur les revenus du patrimoine</td>
+      {% show_field form.f6de %}
+    </tr>
+    <tr> 
+      <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+    </tr>
+	<tr> 
+      <td width="14">&nbsp;</td>
+      <td rowspan="2" colspan="2" class="fdcellule">
+		  Pensions alimentaires versées à des enfants majeurs<br>
+              en vertu d'une décision de justice devenue définitive avant 2006</td>
+      <td align="right" width="303" class="fdcellule">1er enfant&nbsp;</td>
+      {% show_field form.f6gi %}
+    </tr>
+    <tr> 
+      <td width="14">&nbsp;</td>
+      <td align="right" width="303" class="fdcellule">2ème enfant&nbsp;</td>
+      {% show_field form.f6gj %}
+    </tr>
+	<tr> 
+      <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">          </td>
+    </tr>
+	<tr> 
+      <td width="14">&nbsp;</td>
+      <td rowspan="2" colspan="2" class="fdcellule">Autres pensions alimentaires versées à des enfants majeurs</td>
+      <td align="right" width="303" class="fdcellule">1er enfant&nbsp;</td>
+      {% show_field form.f6el %}
+	</tr>
+	<tr> 
+      <td width="14">&nbsp;</td>
+      <td align="right" width="303" class="fdcellule">2ème enfant&nbsp;</td>
+      {% show_field form.f6em %}
+          </tr>
+		  
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Autres pensions alimentaires versées en vertu d'une décision de justice devenue définitive avant 2006</td>
+            
+      {% show_field form.f6gp %}
+          </tr>
+		  
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">          </td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Autres pensions alimentaires</td>
+            
+      {% show_field form.f6gu %}
+          </tr>
+         
+		  
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">          </td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Déductions diverses</td>
+            
+      {% show_field form.f6dd %}
+          </tr>
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td class="bgCommonMediumPart" colspan="5"><b>&nbsp;Epargne retraite PERP ET PRODUITS ASSIMILÉS ( PREFON, COREM et  C.G.O.S )</b></td>
+          </tr>
+	      <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="fdcellule">Epargne versée en
+            	2010</td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="fdcellule">
+		  	  <table border="0" width="100%">
+			    <tbody><tr>
+			      <td width="150">&nbsp;</td>
+                  <td width="150">&nbsp;</td>
+                  <td>Cotisations ou primes</td>
+                  <td>Rachats de cotisations</td>
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td align="right">Vous&nbsp;</td>
+      			  {% show_field form.f6rs %}
+      		      {% show_field form.f6ss %}
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td align="right">Conjoint&nbsp;</td>
+      			  {% show_field form.f6rt %}
+      		      {% show_field form.f6st %}
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td align="right">Personne à charge&nbsp;</td>
+      			  {% show_field form.f6ru %}
+      		      {% show_field form.f6su %}
+                </tr>
+			  </tbody>
+			  </table>
+			</td>
+          </tr>
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="fdcellule">Plafond de déduction<br>
+              (inscrire le montant du plafond auquel vous avez droit)</td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="fdcellule"> 
+          	  <table border="0" width="100%">
+			    <tbody><tr>
+			      <td width="150">&nbsp;</td>
+                  <td width="150">&nbsp;</td>
+                  <td><i>Plafond calculé<br>
+                    sur les revenus de 2009</i></td>
+                  <td><i>Plafond non utilisé<br>
+                    pour les revenus de 2007</i></td>
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td align="right">Vous&nbsp;</td>
+                  <td><b>6PS</b>{{form.faps}}</td>
+                  <td><b>6PS</b>{{form.fbps}}</td>
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td  align="right">Conjoint&nbsp;</a></td>
+                  <td><b>6PT</b>{{form.fapt}}</td>
+                  <td><b>6PT</b>{{form.fbpt}}</td>
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td align="right">Personne à charge&nbsp;</td>
+                  <td><b>6PU</b>{{form.fapu}}</td>
+                  <td><b>6PU</b>{{form.fbpu}}</td>
+                </tr>
+			    <tr>
+                  <td colspan="4">&nbsp;</td>
+                </tr>
+			
+			    <tr>
+			      <td >&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td><i>Plafond non utilisé<br>
+                    pour les revenus de 2008</i></td>
+                  <td><i>Plafond non utilisé<br>
+                    pour les revenus de 2009</i></td>
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td align="right">Vous&nbsp;</td>
+                  <td><b>6PS</b>{{form.fcps}}</td>
+                  <td><b>6PS</b>{{form.fdps}}</td>
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td align="right">Conjoint&nbsp;</td>
+                  <td><b>6PT</b>{{form.fcpt}}</td>
+                  <td><b>6PT</b>{{form.fdpt}}</td>
+                </tr>
+			    <tr>
+			      <td>&nbsp;</td>
+                  <td align="right">Personne à charge&nbsp;</td>
+                  <td><b>6PU</b>{{form.fcpu}}</td>
+                  <td><b>6PU</b>{{form.fdpu}}</td>
+                </tr>
+              </tbody></table>
+              <p>&nbsp;</p>            </td>
+          </tr>
+		  
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">          </td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Si vous souhaitez bénéficier du plafond de votre conjoint, cochez la case </td>
+            
+      		{% show_field form.f6qr %}
+          </tr>
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">          </td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Si vous êtes nouvellement
+            	domicilié en France en 2010 après avoir résidé à l'étranger&nbsp;&nbsp;<br>
+              au cours des 3 années précédentes, cochez la case</td>
+      		{% show_field form.f6qw %}
+          </tr>
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="fdcellule">Détermination du plafond de déduction pour les revenus 2010 au titre de l'Epargne Retraite (PERP, Préfon et assimilés)</td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td rowspan="3" colspan="2" class="fdcellule">Cotisations
+            	versées en 2010 aux régimes obligatoires d'entreprises
+            	de retraite supplémentaire "article&nbsp;83" et
+            	pour leur montant total ou partiel celles versées aux régimes ou
+            	contrats facultatifs de retraite "Madelin" et "Madelin
+            	agricole"&nbsp;&nbsp;</td>
+            
+        <td width="303" class="fdcellule"> 
+              <div align="right">Vous&nbsp;</div>            </td>
+      		{% show_field form.f6qs %}
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+        	<td width="303" class="fdcellule"><div align="right">Conjoint&nbsp;</div></td>
+      		{% show_field form.f6qt %}
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+			<td width="303" class="fdcellule"><div align="right">Personne à charge&nbsp;</div></td>
+      		{% show_field form.f6qu %}
+          </tr>
+          <tr> 
+            <td nowrap="" width="14">&nbsp;</td>
+            <td colspan="3" class="titre01"><span class="titre">&nbsp;RÉDUCTIONS ET CRÉDITS D’IMPÔT&nbsp;</span></td>
+            
+        <td align="right" width="158" valign="top" class="titre01">&nbsp;</td>
+          </tr><tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="bgCommonMediumPart">&nbsp;<b>Vos dons</b> </td>
+          </tr>
+          <tr>
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">A des organismes d'aide
+            	aux personnes en difficulté (Maximum
+            	513€)</td>
+      		{% show_field form.f7ud %}
+          </tr>
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">          </td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Autres dons (aux oeuvres
+            	reconnues d'utilité publique ou fiscalement assimilées en matière
+            	de dons, aux oeuvres d'intérêt général
+            	et au financement des partis politiques, ...)&nbsp;</td>
+      		{% show_field form.f7uf %}
+          </tr>
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Report des versements
+            	2005</td>
+            
+      		{% show_field form.f7xs %}
+          </tr>
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Report des versements
+            	2006</td>
+      		{% show_field form.f7xt %}
+          </tr>
+		   
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Report des versements
+            	2007</td>
+      		{% show_field form.f7xu %}
+          </tr>
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+		   
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Report des versements
+            	2008</td>
+      		{% show_field form.f7xw %}
+          </tr>
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+		   
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Report des versements
+            	2009</td>
+      		{% show_field form.f7xy %}
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="bgCommonMediumPart">&nbsp;<b>Vos cotisations syndicales des salariés et pensionnés</b></td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td align="right" colspan="3" class="fdcellule"> 
+              <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tbody><tr> 
+                  <td align="right">Vous</td>
+      			  {% show_field form.f7ac %}
+                  <td align="right">Votre conjoint</td>
+      			  {% show_field form.f7ae %}
+                  <td align="right">Personnes à charge</td>
+                </tr>
+              </tbody></table>            </td>
+            
+      		{% show_field form.f7ag %}
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="bgCommonMediumPart">&nbsp;<b>Vos autres charges ouvrant droit à réduction d'impôt ou à crédit d'impôt</b></td>
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="fdcellule">Sommes versées pour l'emploi d'un salarié à domicile&nbsp;</td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">- Vous (et votre conjoint
+            	pour un couple marié/pacsé) avez exercé une activité professionnelle
+            	ou avez été demandeur d'emploi en 2010</td>
+            
+      			  {% show_field form.f7db %}
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">- Vous êtes retraités
+            	ou ne remplissez pas les conditions ci-dessus ou avez engagé des
+            	dépenses
+            	pour un ascendant de plus de 65 ans bénéficiaire de
+            	l'APA</td>
+            
+      			  {% show_field form.f7df %}
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">- En 2010, vous avez
+            	employé directement pour la première fois un salarié à domicile</td>
+            
+      			  {% show_field form.f7dq %}
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">- Vous, votre conjoint ou une personne à votre charge a la carte d'invalidité d'au moins 80%</td>
+            
+      			  {% show_field form.f7dg %}
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">- Nombre d'ascendants bénéficiaires de l'APA âgés de plus de 65 ans pour lesquels vous avez engagés des dépenses</td>
+      		{% show_field form.f7dl %}
+          </tr>
+		 
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+		  <tr>
+		  <td width="14">&nbsp;</td>
+		  <td class="fdcellule" colspan="5">Intérêts
+            	des emprunts contractés pour l'acquisition ou la construction de
+            	l'habitation principale</td>
+		  </tr>
+          <tr>
+            <td width="14">&nbsp;</td>
+            <td rowspan="2" colspan="2" class="fdcellule">
+			Logements anciens ; logements neufs acquis ou construits avant le 01
+				janvier 2010</td>
+            
+        <td align="right" width="303" class="fdcellule">Première annuité&nbsp;</td>
+      		{% show_field form.f7vy %}
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            
+        <td align="right" width="303" class="fdcellule">Annuités suivantes&nbsp; </td>
+      		{% show_field form.f7vz %}
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Logements neufs non labellisés BBC acquis ou construits à compter du 01 janvier
+            	2010</td>
+      		{% show_field form.f7vw %}
+          </tr>
+          <tr>
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule"> Logements neufs labellisés BBC acquis ou construits à compter du 01 janvier 2009</td>
+      		{% show_field form.f7vx %}
+          </tr>
+		  <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="bgCommonMediumPart">&nbsp;<b>Vos prestations compensatoires</b></td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Sommes versées en 2010</td>
+      		{% show_field form.f7wn %}
+          </tr>
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Sommes totales décidées
+            	par jugement en 2010 ou capital reconstitué</td>
+      		{% show_field form.f7wo %}
+          </tr>
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Capital fixé en substitution de rente</td>
+      		{% show_field form.f7wm %}
+          </tr>
+          <tr> 
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+          </tr>
+          <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Report des sommes	décidées en 2009</td>
+      		{% show_field form.f7wp %}
+          </tr>
+		  <tr> 
+            <td width="14">&nbsp;</td>
+            <td colspan="4" class="bgCommonMediumPart">&nbsp;<b>Dépenses en faveur de la qualité environnementale de l'habitation principale</b>&nbsp;&nbsp;</td>
+    </tr>
+		  
+    <tr> 
+            
+        <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Si les dépenses
+            	réalisées ont été financées par
+            	un eco-prêt à taux zéro, cochez la case </td>
+      		{% show_field form.f7we %}
+    </tr>		  
+    <tr> 
+            
+        <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+    </tr>
+	<tr> 
+        <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Dépenses ouvrant droit
+            	au crédit d'impôt taux de 15%</td>
+      		{% show_field form.f7wq %}
+    </tr> 
+    <tr>             
+        <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+    </tr>  
+    <tr>    
+        <td width="14">&nbsp;</td>
+        <td colspan="3" class="fdcellule">Dépenses ouvrant
+            	droit au crédit d'impôt taux de 25%</td>
+      	{% show_field form.f7wh %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+    </tr>
+  <tr> 
+        <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Dépenses ouvrant
+            	droit au crédit d'impôt taux de 40%</td>
+      	{% show_field form.f7wk %}
+    </tr> 
+    <tr> 
+        <td height="2" width="14"></td>
+        <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+    </tr> 
+    <tr>
+        <td width="14">&nbsp;</td>
+            <td colspan="3" class="fdcellule">Dépenses ouvrant
+            	droit au crédit d'impôt taux de 50%</td>
+      	{% show_field form.f7wf %}
+    </tr>
+    <tr> 
+        <td width="14">&nbsp;</td>
+      <td colspan="4" class="bgCommonMediumPart">&nbsp;<b>Dépenses en faveur de l'aide aux personnes</b>&nbsp;&nbsp;</td>
+    </tr>
+    <tr>   
+        <td width="14">&nbsp;</td>
+      <td colspan="3" class="fdcellule">Acquisition d’ascenseurs électriques à traction</td>
+      	{% show_field form.f7wi %}
+    </tr>
+    <tr>             
+        <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+    </tr>		  
+    <tr>           
+        <td width="14">&nbsp;</td>
+      <td colspan="3" class="fdcellule">Équipements spécialement conçus pour les personnes âgées ou handicapées</td>
+      	{% show_field form.f7wj %}
+    </tr>
+    <tr>             
+        <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+    </tr>  
+    <tr>           
+        <td width="14">&nbsp;</td>
+      <td colspan="3" class="fdcellule">Travaux de prévention des risques technologiques</td>
+      	{% show_field form.f7wl %}
+    </tr>
+    <tr>             
+        <td nowrap="" width="14">&nbsp;</td>
+      <td colspan="4" class="titre01"><b><span class="titre">AUTRES IMPUTATIONS, REPRISES DE RÉDUCTIONS D'IMPÔT, CONVENTIONS INTERNATIONALES, DIVERS</span></b></td>
+    </tr>		  
+    <tr>
+        <td width="14">&nbsp;</td>
+      <td class="fdcellule" colspan="4">Elus locaux (indemnités de fonctions soumises à la retenue à la source</td>
+    </tr>
+    <tr> 
+        <td width="14">&nbsp;</td>
+      <td class="fdcellule" colspan="2">&nbsp;</td>
+        <td align="right" width="303" class="fdcellule">Vous</td>
+      	{% show_field form.f8by %}
+    </tr>		  
+    <tr>           
+        <td width="14">&nbsp;</td>
+      <td class="fdcellule" colspan="2">&nbsp;</td>
+        <td align="right" width="303" class="fdcellule">Conjoint</td>
+      	{% show_field form.f8cy %}
+    </tr>		   
+    <tr>    
+        <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+    </tr>	  
+    <tr>   
+        <td width="14">&nbsp;</td>
+      <td class="fdcellule" colspan="3">Plus-values en report d'imposition non expiré</td>
+      	{% show_field form.f8ut %}
+    </tr>          
+    <tr>    
+        <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4">            </td>
+    </tr> 
+    <tr>   
+        <td width="14">&nbsp;</td>
+      <td colspan="3" class="fdcellule">Reprises de réductions ou de crédits d'impôt</td>
+      	{% show_field form.f8tf %}
+    </tr>          
+    <tr>    
+        <td height="2" width="14"></td>
+      <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+    </tr>
+    <tr>   
+        <td width="14">&nbsp;</td>
+      <td class="fdcellule" colspan="4">Personnes domiciliées en France percevant des revenus de l'étranger</td>
+    </tr> 
+    <tr> 
+        <td width="14">&nbsp;</td>
+        <td width="451" class="fdcellule">&nbsp;</td>
+      <td class="fdcellule" colspan="2">Revenus autres que ceux déclarés dans les autres rubriques à prendre en compte pour le calcul du taux effectif d'imposition</td>
+      	{% show_field form.f8ti %}
+    </tr>
+    <tr>    
+        <td width="14">&nbsp;</td>
+        <td width="451" class="fdcellule">&nbsp;</td>
+      <td class="fdcellule" colspan="2">Revenus étrangers soumis en France à l'impôt sur le revenu et imposables à la CRDS</td>
+      	{% show_field form.f8tl %}
+    </tr>
+          
+    <tr> 
+            
+        <td width="14">&nbsp;</td>
+        <td width="451" class="fdcellule">&nbsp;</td>
+      <td class="fdcellule" colspan="2">Revenus étrangers imposables en France et ouvrant droit à un crédit d'impôt égal au montant de l'impôt français correspondant à ces revenus </td>
+      	{% show_field form.f8tk %}
+  </tr>
+  </table>
+  <input type="submit" value="Calculer" />
+</form>
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "home.html" %}
+{% load myTags %}
+{% block title %}Déclaration 3{% endblock %}
+
+{% block content %}
+<form class="principal" name="form2" method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <br />
+  <table border="0" width="100%" class="tableau">
+    <tr>
+      <td height="23" class="titre01" colspan="5"><span class="titre">TRAITEMENTS, SALAIRES</span></td>
+    </tr>
+    <tr align="center">
+      <td width="320">&nbsp;</td>
+      <td width="75" align="center">Vous</td>
+      <td width="75" align="center">Conjoint</td>
+      <td width="75" align="center">1<sup>ère</sup> pers.<br> à charge</td>
+      <td width="75" align="center">2<sup>ème</sup> pers.<br> à charge</td>
+    </tr>
+    <tr>
+      <td><b>&nbsp;Indiquez vos seuls revenus d'activité</b><br>
+                (salaires, droits d'auteur, avantages en nature et indemnités journalières)</td>
+      {% show_field form.f1aj %}
+      {% show_field form.f1bj %}
+      {% show_field form.f1cj %}
+      {% show_field form.f1dj %}
+    </tr>
+    <tr>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="5"></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Indiquez vos autres revenus imposables</b><br>
+      (indemnité de préretraite, allocation chômage...)</td>
+      {% show_field form.f1ap %}
+      {% show_field form.f1bp %}
+      {% show_field form.f1cp %}
+      {% show_field form.f1dp %}
+    </tr>
+    <tr >
+      <td height="2" background="/static/image/ligne01.gif"  colspan="5"></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Indiquez vos frais réels</b></td>
+      {% show_field form.f1ak %}
+      {% show_field form.f1bk %}
+      {% show_field form.f1ck %}
+      {% show_field form.f1dk %}
+    </tr>
+    <tr>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="5"></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Demandeur d'emploi inscrit depuis plus d'un an</b></td>
+      {% show_field form.f1ai %}
+      {% show_field form.f1bi %}
+      {% show_field form.f1ci %}
+      {% show_field form.f1di %}
+    </tr>
+    <tr>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="5"></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Heures supplémentaires : revenus exonérés connus</b></td>
+      {% show_field form.f1au %}
+      {% show_field form.f1bu %}
+      {% show_field form.f1cu %}
+      {% show_field form.f1du %}
+    </tr>
+    <tr>
+      <td colspan="5" class="titre01"><span class="titre">PRIME POUR L'EMPLOI</span></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Travail à temps plein toute l'année 2010 </b> cochez la case</td>
+      {% show_field form.f1ax %}
+      {% show_field form.f1bx %}
+      {% show_field form.f1cx %}
+      {% show_field form.f1dx %}
+    </tr>
+    <tr>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="5"></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Sinon, indiquez le nombre d'heures  rémunérées  dans l'année</b></td>
+      {% show_field form.f1av %}
+      {% show_field form.f1bv %}
+      {% show_field form.f1cv %}
+      {% show_field form.f1dv %}
+    </tr>
+    <tr>
+      <td colspan="5" class="titre01">&nbsp;<span class="titre">Revenu de solidarité active (RSA)</span></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Montant du RSA "complément d'actvité"</b></td>
+      {% show_field form.f1bl %}
+      <td>&nbsp;</td>
+      {% show_field form.f1cb %}
+      {% show_field form.f1dq %}
+    </tr>
+    <tr>
+      <td colspan="5" class="titre01">&nbsp;<span class="titre">PENSIONS, RETRAITES, RENTES</span></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Retraites</b></td>
+      {% show_field form.f1as %}
+      {% show_field form.f1bs %}
+      {% show_field form.f1cs %}
+      {% show_field form.f1ds %}
+    </tr>
+    <tr>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="5"></td>
+    </tr>
+    <tr >
+      <td><b>&nbsp;Pensions alimentaires perçues</b></td>
+      {% show_field form.f1ao %}
+      {% show_field form.f1bo %}
+      {% show_field form.f1co %}
+      {% show_field form.f1do %}
+    </tr>
+
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  <input type="submit" value="Suivant"/>
+</form>
+{% endblock %}

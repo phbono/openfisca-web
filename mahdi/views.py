@@ -1,8 +1,8 @@
 # -*-coding:Utf-8 -*
 
 from django.http import HttpResponse
-from django.shortcuts import render
-from mahdi.models import IndividualForm, Declar1Form
+from django.shortcuts import render, render_to_response
+from mahdi.models import IndividualForm, Declar1Form, Declar2Form
 from django.forms.formsets import formset_factory
 
 from mahdi.lanceur import Simu, Compo, BaseScenarioFormSet
@@ -59,6 +59,9 @@ def menage(request):
     return render(request, 'mahdi/menage.html', {'formset' : formset})
 
 
+def home(request):
+    return render_to_response('mahdi/home.html')
+
 def declar01(request):
 
     form = Declar1Form() 
@@ -74,6 +77,41 @@ def declar01(request):
 
     return render(request, 'mahdi/declar01.html', {'form' : form})   
         
+
+def declar02(request):
+    form = Declar2Form()
+        
+    if request.method == 'POST':
+#        if form.is_valid():
+        print 'POST'
+    else:
+        form = Declar1Form() 
+
+    return render(request, 'mahdi/declar02.html', {'form' : form})   
+    
+    
+def declar03(request):
+    form = Declar2Form()
+        
+    if request.method == 'POST':
+#        if form.is_valid():
+        print 'POST'
+    else:
+        form = Declar1Form() 
+
+    return render(request, 'mahdi/declar03.html', {'form' : form})
+
+
+def declar04(request):
+    form = Declar2Form()
+        
+    if request.method == 'POST':
+#        if form.is_valid():
+        print 'POST'
+    else:
+        form = Declar1Form() 
+
+    return render(request, 'mahdi/declar04.html', {'form' : form})
 
 
 # MOVE this to somewhere else !

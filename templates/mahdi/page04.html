@@ -1,0 +1,319 @@
+{% extends "home.html" %}
+{% load myTags %}
+
+{% block title %}Déclaration 4{% endblock %}
+
+{% block content %}
+<form class="principal" name="form2" method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <br />
+  <table border="0" width="100%" class="tableau">
+    <tr>
+      <td nowrap="" width="14">&nbsp;</td>
+      <td colspan="4"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+          <tbody>
+            <tr>
+              <td nowrap="" width="1%"><span class="titre"><span class="titre00">VOS 
+                REVENUS</span></span></td>
+              <td><table border="0" width="100%">
+                  <tbody>
+                    <tr>
+                      <td height="4" background="/static/image/ligne01.gif"></td>
+                    </tr>
+                  </tbody>
+                </table></td>
+            </tr>
+          </tbody>
+        </table></td>
+    </tr>
+    <tr>
+      <td colspan="5">&nbsp;</td>
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif" colspan="4"></td>
+    </tr>
+    <tr>
+      <td nowrap="" width="14">&nbsp;</td>
+      <td colspan="4" class="titre01">&nbsp;<span class="titre">REVENUS DES VALEURS ET CAPITAUX MOBILIERS</span></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Revenus des actions et parts soumis au prélèvement libératoire de 18% </td>
+      {% show_field form.f2da %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif" colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Produits d'assurance-vie et de capitalisation soumis au prélèvement libératoire au taux de 7,5%</td>
+      {% show_field form.f2dh %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Produits de placement 
+        soumis aux prélèvements libératoires autres 
+        que ceux indiqués lignes 2DA et 2DH</td>
+      {% show_field form.f2ee %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td class="bgCommonMediumPart" colspan="4"><b>&nbsp;Vos revenus des 
+        valeurs et capitaux mobiliers ouvrant droit à abattement</b>&nbsp;&nbsp;(ne les déduisez pas)</td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Revenus des actions 
+        et parts <font size="-1">(crédit d'impôt inclus)</font></td>
+      {% show_field form.f2dc %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Revenus imposables 
+        des titres non cotés détenus dans le PEA</td>
+      {% show_field form.f2fu %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Produits des contrats 
+        d'assurance-vie et de capitalisation d'une durée au moins 
+        égale à six ans ou huit ans </td>
+      {% show_field form.f2ch %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td class="bgCommonMediumPart" colspan="4"><b>&nbsp;Vos revenus des 
+        valeurs et capitaux mobiliers n'ouvrant pas droit à abattement</b></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Revenus de valeurs 
+        mobilières et distributions <font size="-1">(crédit d'impôt inclus)</font></td>
+      {% show_field form.f2ts %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Autres revenus distribués et revenus des structures soumises hors de France à un régime fiscal privilégié</td>
+      {% show_field form.f2go %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Intérêts et autres revenus <font size="-1">(crédit d'impôt inclus)</font></td>
+      {% show_field form.f2tr %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td class="bgCommonMediumPart" colspan="4"><b>&nbsp;Vos autres revenus 
+        des valeurs et capitaux mobiliers</b></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Revenus indiqués ci-dessus lignes 2DC, 2CH, 2TS, 2TR déjà soumis aux prélèvements sociaux sans CSG déductible</td>
+      {% show_field form.f2cg %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Revenus indiqués ci-dessus lignes 2DC, 2CH, 2TS, 2TR déjà soumis aux prélèvements sociaux avec CSG déductible</td>
+      {% show_field form.f2bh %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Montant des frais venant en déduction</td>
+      {% show_field form.f2ca %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Crédits d'impôt sur valeurs étrangères</td>
+      {% show_field form.f2ab %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Crédits d'impôt « directive épargne » et autres crédits d'impôt restituables</td>
+      {% show_field form.f2bg %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td colspan="2"  rowspan="4">Déficits des années antérieures non encore déduits</td>
+      <td align="right" width="303" >2006</td>
+      {% show_field form.f2aa %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td align="right" width="303" >2007</td>
+      {% show_field form.f2al %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td align="right" width="303" >2008</td>
+      {% show_field form.f2am %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td align="right" width="303" >2009</td>
+      {% show_field form.f2an %}
+    </tr>
+    
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Impatriés : abattement de 50% sur les revenus de capitaux mobiliers perçus à l’étranger</td>
+      {% show_field form.f2dm %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td class="titre01" colspan="4"><span class="titre">&nbsp;PLUS VALUES DE CESSION DE VALEURS MOBILIERES, DROITS SOCIAUX ET ASSIMILES </span></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td  colspan="4"><b>Gains de cessions de valeurs mobilières, de droits sociaux et assimilés</b> taxables à 18 %</td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td align="right" valign="bottom" >Plus-value&nbsp;&nbsp;</td>
+      {% show_field form.f3vg %}
+      <td align="right" >Perte 2010&nbsp;&nbsp; </td>
+      {% show_field form.f3vh %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td  colspan="4"><p> <b>Gains de cession soumis aux prélèvements sociaux. </b><i>Indiquez la plus-value  ou la perte quel que soit le montant de vos cessions de l’année 2010 </i></p></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td align="right" >Plus-value&nbsp;&nbsp;</td>
+      {% show_field form.f3vt %}
+      <td align="right" >Perte 2010&nbsp;&nbsp; </td>
+      {% show_field form.f3vu %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td  colspan="3">Pertes ouvrant droit au crédit d’impôt de 19&nbsp;%</td>
+      {% show_field form.f3vv %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td class="titre01" colspan="4"><span class="titre">&nbsp;REVENUS FONCIERS</span></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3"><b>Micro foncier</b> : Indiquez les recettes brutes (ne déduisez aucun abattement)</td>
+      {% show_field form.f4be %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Revenus fonciers imposables</td>
+      {% show_field form.f4ba %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Déficit imputable sur les revenus fonciers</td>
+      {% show_field form.f4bb %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Déficit imputable sur le revenu global</td>
+      {% show_field form.f4bc %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Déficits antérieurs non encore imputés</td>
+      {% show_field form.f4bd %}
+    </tr>
+    <tr>
+      <td height="2" width="14"></td>
+      <td height="2" background="/static/image/ligne01.gif"  colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Primes d'assurances
+        pour loyers impayés de location conventionnées</td>
+      {% show_field form.f4bf %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td class="bgCommonMediumPart" colspan="4"><b>&nbsp;Revenus exceptionnels ou différés à imposer suivant le système du quotient</b></td>
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td  colspan="3">Montant total des revenus à imposer suivant le système du quotient </td>
+      {% show_field form.f0xx %}
+    </tr>
+    <tr>
+      <td width="14">&nbsp;</td>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+  </table>
+  <input type="submit" value="Suivant"/>
+</form>
+
+{% endblock %}

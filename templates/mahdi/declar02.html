@@ -1,0 +1,129 @@
+{% extends "home.html" %}
+{% load myTags %}
+
+
+{% block title %}Déclaration 2{% endblock %}
+
+{% block content %}
+<form class="principal" name="form1" method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <br />
+  <table border="0" width="100%" class="tableau">
+    <tr>
+      <td><table cellspacing="0" cellpadding="0" border="0" width="100%">
+          <td nowrap="" width="14">&nbsp;</td>
+            <td colspan="4"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td nowrap="" width="1%"><span class="titre"><span class="titre00">VOTRE ETAT CIVIL</span></span></td>
+                  <td><table border="0" width="100%">
+                      <tr>
+                        <td height="4" background="/static/image/ligne01.gif"></td>
+                      </tr>
+                    </table></td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td width="158" colspan="3">&nbsp;</td>
+          </tr>
+          <tr>
+            <td nowrap="" width="14">&nbsp;</td>
+            <td colspan="2" class="titre01"><span class="titre">Situations pouvant donner droit à une demi-part supplémentaire</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td colspan="2"><b>1. En cas de célibat, divorce, séparation, veuvage</b><br>
+              &ndash; Vous viviez seul(e)
+              au 1<sup>er</sup> janvier 2010 et vous avez un enfant : <br>
+              <div style="padding-left: 30px"> - majeur ou marié/pacsé (ou mineur imposé en son nom propre) non rattaché à votre
+                foyer ;<br>
+                - décédé après l’âge de 16 ans ou par suite de faits de guerre.</div></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td> • Vous avez élevé cet enfant pendant au moins cinq années au cours desquelles vous viviez seul </td>
+            {% show_case form.caseL %}
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>• Vous n’avez pas élevé cet enfant pendant cinq années au cours desquelles vous viviez seul mais vous avez bénéficié de
+              la demi-part pour l’imposition des revenus de 2008 et 2009</td>
+            <td colspan="-1" align="center">{{form.caseE}} <b><font size="-1">E</font></b> ou <b><font size="-1"> K</font></b></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><br>
+              &ndash; Vous ne viviez pas
+              seul(e) au 1<sup>er</sup> janvier 2010 </td>
+            <td colspan="-1" align="center">{{form.caseN}} <b><font size="-1">N</font></b></td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" colspan="2"></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><b>2. Titulaire d’une pension (militaire, accident du travail) pour une invalidité d’au moins 40 % ou d’une carte d’invalidité d’au moins 80&nbsp;%</b></td>
+            <td colspan="-1" align="center" valign="bottom">{{form.caseP}} <b><font size="-1">P</font></b></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><p>Votre conjoint remplit ces conditions, ou votre conjoint, décédé en 2010, remplissait ces conditions</p></td>
+            <td colspan="-1" align="center">{{form.caseF}} <b><font size="-1">F</font></b></td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" colspan="2"></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><b>3. Titulaire de la carte du combattant ou d’une pension militaire d’invalidité ou de victime de guerre </b></td>
+            <td colspan="-1" align="center">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><p>- Vous êtes  célibataire, divorcé, séparé, veuf et :<br>
+                <b>· </b>vous avez plus de 75 ans et vous remplissez ces conditions ;<br>
+                <b>· </b>ou vous avez plus de 75 ans et votre conjoint, décédé, remplissait  ces conditions ;<br>
+                <b>· </b>ou votre  conjoint, âgé de plus de 75 ans, décédé en 2010, remplissait ces conditions</p></td>
+            <td colspan="-1" align="center">{{form.caseW}} <b><font size="-1">W</font></b></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>- Vous êtes mariés ou liés par un PACS et l’un des deux déclarants, âgé de plus de 75 ans, remplit ces conditions</td>
+            <td colspan="-1" align="center">{{form.caseS}} <b><font size="-1">S</font></b></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><p>- Vous avez une pension de veuve de guerre</p></td>
+            <td colspan="-1" align="center">{{form.caseG}} <b><font size="-1">G</font></b></td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" colspan="2"></td>
+          </tr>
+          <tr>
+            <td nowrap="nowrap" width="14">&nbsp;</td>
+            <td colspan="2" class="titre01"><span class="titre">&nbsp;Parent isolé</span></td>
+          </tr>
+          <tr>
+            <td width="14">&nbsp;</td>
+            <td><p>Vous êtes célibataire, divorcé(e), séparé(e), et vous vivez seul(e) avec votre (ou vos) enfant(s) ou des personnes invalides recueillies sous votre toit, cochez la case</p></td>
+            <td width="158" colspan="-1" align="center">{{form.caseT}} <b><font size="-1">T</font></b></td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" colspan="2"></td>
+          </tr>
+          <tr>
+            <td colspan="3">&nbsp;</td>
+          </tr>
+        </table></td>
+    </tr>
+  </table><br />
+  <input type="submit" value="Suivant" />
+</form>
+{% endblock %}

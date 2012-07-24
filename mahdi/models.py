@@ -87,6 +87,27 @@ class Declar1Form(Form):
             else:
                 self.fields[birth_date] = MyDateField()
 
+
+class MyBooleanField(BooleanField):
+    def __init__(self, *args, **kwargs):
+        BooleanField.__init__(self, required=False, *args, **kwargs)
+
+
+class Declar2Form(Form):
+    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))
+    
+    def __init__(self, *args, **kwargs):
+        #extra = kwargs.pop('extra')
+        super(Declar2Form, self).__init__(*args, **kwargs)
+
+        cases = ['caseL', 'caseE', 'caseN', 'caseP', 'caseF', 'caseW', 'caseS', 'caseG', 'caseT']  
+        for case in cases:
+            self.fields[case] = MyBooleanField()
+            
+
+
+
+
 #class IndividuForm(forms.Form):
 #    def 
 #    __init__(self, indiv = None):
