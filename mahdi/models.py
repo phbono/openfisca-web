@@ -4,8 +4,8 @@
 import datetime
 from django.db import models
 
-from django.forms import Form, ModelForm, IntegerField, DateField, ChoiceField, BooleanField, ValidationError  
-from django.forms.formsets import BaseFormSet
+from django.forms import Form, IntegerField, DateField, ChoiceField, BooleanField, ValidationError  
+
 from django import template
 
 from django.forms.extras.widgets import SelectDateWidget
@@ -53,9 +53,43 @@ class IndividualForm(Form):
 
 
 
+#class DeclarForm(Form):
+#    def __init__(self, *args, **kwargs):
+#        extra = kwargs.pop('extra')
+#        super(Form, self).__init__(*args, **kwargs)
+#
+#        for code, label in extra:
+#            
+#            self.fields[code] = CharField(label=label)
+
+class MyDateField(DateField):
+    def __init__(self, kwargs = {}):
+        wid = SelectDateWidget(years = [i for i in reversed(xrange(1900,2010))])
+        fieldAttr = {'required' : False, 
+                     'localize': True
+                     }
+        fieldAttr.update(kwargs)
+        DateField.__init__(self, widget= wid, **fieldAttr)
+
+
+
+class Declar1Form(Form):
+    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))
+    
+    def __init__(self, *args, **kwargs):
+        #extra = kwargs.pop('extra')
+        super(Declar1Form, self).__init__(*args, **kwargs)
+
+        birth_dates = ['birthv','birthc'] + ['birth' + str(i) for i in range(1,10)]
+        for birth_date in birth_dates:
+            if birth_date == 'birthv':
+                self.fields[birth_date] = MyDateField({'required':True})
+            else:
+                self.fields[birth_date] = MyDateField()
 
 #class IndividuForm(forms.Form):
-#    def __init__(self, indiv = None):
+#    def 
+#    __init__(self, indiv = None):
 #        super(IndividuForm, self).__init__()
 #    # indiv est un dict de dict. La clé est le noi de l'individu
 #    # Exemple :
