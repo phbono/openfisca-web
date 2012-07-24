@@ -4,7 +4,7 @@
 import datetime
 from django.db import models
 
-from django.forms import Form, IntegerField, DateField, ChoiceField, BooleanField, ValidationError  
+from django.forms import Form, IntegerField, DateField, ChoiceField, BooleanField, TextInput  
 
 from django import template
 
@@ -62,6 +62,30 @@ class IndividualForm(Form):
 #            
 #            self.fields[code] = CharField(label=label)
 
+
+class MyBooleanField(BooleanField):
+    def __init__(self, *args, **kwargs):
+        BooleanField.__init__(self, required=False, *args, **kwargs)
+
+
+class MyIntegerField(IntegerField):
+#    def __init__(self, kwargs = {}, *args):
+    def __init__(self, *args, **kwargs):
+        widgetAttr = {'size':'8', 
+                      'align': 'right',
+                      'maxlength':'9', 
+                      'style' : "text-align: right"
+                      }
+        wid = TextInput(attrs=widgetAttr)
+        fieldAttr = {'max_value': 999999999, 
+                     'min_value': 0,
+                     'required' : False,
+                     'localize': True
+                     }
+        fieldAttr.update(kwargs)
+        IntegerField.__init__(self, widget = wid, **fieldAttr)
+
+
 class MyDateField(DateField):
     def __init__(self, kwargs = {}):
         wid = SelectDateWidget(years = [i for i in reversed(xrange(1900,2010))])
@@ -88,14 +112,8 @@ class Declar1Form(Form):
                 self.fields[birth_date] = MyDateField()
 
 
-class MyBooleanField(BooleanField):
-    def __init__(self, *args, **kwargs):
-        BooleanField.__init__(self, required=False, *args, **kwargs)
-
 
 class Declar2Form(Form):
-    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))
-    
     def __init__(self, *args, **kwargs):
         #extra = kwargs.pop('extra')
         super(Declar2Form, self).__init__(*args, **kwargs)
@@ -105,8 +123,51 @@ class Declar2Form(Form):
             self.fields[case] = MyBooleanField()
             
 
+from core.columns import BoolCol, IntCol
 
+class Declar3Form(Form):
+    def __init__(self, *args, **kwargs):
+        description = kwargs.pop('description')
+        print description.col_names
+        super(Declar3Form, self).__init__(*args, **kwargs)
+        fields = ['sali', 'choi', 'fra', 'cho_ld', 'hsup', 'ppe_tp_sa',
+                   'ppe_du_sa',  'f1bl', 'f1cb', 'f1dq', 
+                   'rsti', 'f1at', 'alr']
+        for field in fields:
+            
+            print 'is ' + str(field) + ' in description :' + str( field in description.col_names) 
+            
+            if field not in ['f1bl', 'f1cb', 'f1dq', 'f1dq', 'f1at']:
+                col = description.get_col(field)
+                if col.label is not None:
+                    label = col.label
+                else:
+                    label = field    
+                print col
+                print label
+                
+                if isinstance(col, IntCol):
+                    self.fields[field] = MyIntegerField(label=label)
+                if isinstance(col, BoolCol):
+                    self.fields[field] = MyBooleanField(label=label)
 
+#    f1aj = MyIntegerField()
+#    f1ap = MyIntegerField()
+#    f1ak = MyIntegerField()
+#    f1ai = MyBooleanField() cho_ld
+
+#    f1au = MyIntegerField() hsup
+#    f1ax = MyBooleanField()
+#    f1av = MyIntegerField()
+
+#    f1bl = MyIntegerField()
+#    f1cb = MyIntegerField()
+#    f1dq = MyIntegerField()
+
+#    f1as = MyIntegerField() rsti
+#    f1ao = MyIntegerField() alr
+
+    
 
 #class IndividuForm(forms.Form):
 #    def 

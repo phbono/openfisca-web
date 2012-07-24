@@ -2,7 +2,7 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render, render_to_response
-from mahdi.models import IndividualForm, Declar1Form, Declar2Form
+from mahdi.models import IndividualForm, Declar1Form, Declar2Form, Declar3Form
 from django.forms.formsets import formset_factory
 
 from mahdi.lanceur import Simu, Compo, BaseScenarioFormSet
@@ -89,9 +89,11 @@ def declar02(request):
 
     return render(request, 'mahdi/declar02.html', {'form' : form})   
     
+from france.data import InputTable
+from core.datatable import DataTable
     
 def declar03(request):
-    form = Declar2Form()
+    form = Declar3Form(description= DataTable(InputTable).description)
         
     if request.method == 'POST':
 #        if form.is_valid():

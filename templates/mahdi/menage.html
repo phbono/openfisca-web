@@ -1,3 +1,6 @@
+{% extends "mahdi/home.html" %}
+
+{% block content %}
 <form method="POST" action="/mahdi/menage/">{% csrf_token %}
 {{ formset.non_field_errors }}
 {{ formset.management_form }}
@@ -31,3 +34,4 @@
   <input type=submit name="remove" value="Remove">
   <input type=submit name="reset"  value="Reset">
 </form>
+{% endblock %}
