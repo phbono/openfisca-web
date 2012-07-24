@@ -1,89 +1,93 @@
 # -*-coding:Utf-8 -*
 
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect, render_to_response
-from simulation.models import IndividualForm
-from django.forms.formsets import formset_factory, BaseFormSet
-from datetime import datetime     
-from core.utils import Scenario
-from django.core.urlresolvers import reverse
+from django.http import HttpResponse
+from django.shortcuts import render
+from simulation.models import IndividualForm, LogementForm
+from django.forms.formsets import formset_factory
+from django.shortcuts import render_to_response
+from django.core.context_processors import csrf
+from simulation.lanceur import Simu, Compo, BaseScenarioFormSet
 
-class BaseScenarioFormSet(BaseFormSet):
-    def clean(self):
-        """Checks consistency of a formset"""
-        if any(self.errors):
-            # Don't bother validating the formset unless each form is valid on its own
-            return
+
 
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
-#    form = IndividualForm()
-#    return render_to_response('mahdi/menage.html', {'formset': form})
+# form = IndividualForm()
+# return render_to_response('simulation/menage.html', {'formset': form})
 
 def menage(request):
-    
-    delete = False
-    if delete: 
-        del request.session['scenario']
+    compo = request.session.get('compo',default=None)
+    if compo == None:
+        compo = Compo()
 
-    scenario = request.session.get('scenario',default=None)
-    if scenario == None:
-        print 'scenario is None'
-        scenario = Scenario()
+    if request.method == 'POST':
 
-    if request.method == 'POST':    # ADD
-        ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
-        formset = ScenarioFormSet(request.POST)
-        for form in formset.cleaned_data:
-            print form
-        print formset.is_valid()
-        if formset.is_valid():
+        if 'reset' in request.POST:
+            if 'compo' in request.session:
+                del request.session['compo']
+            compo = Compo()
+            formset = compo.gen_formset()
+            request.session['compo'] = compo
 
-            scenario = formset2scenario(formset)
-            scenario.addIndiv(0, datetime(1975,1,1).date(), 'vous', 'chef')
-            print scenario
-            formset = scenario2formset(scenario)
-            request.session['scenario'] = scenario        
-            return render(request, 'simulation/menage.html', {'formset' : formset})
+        else:
+            ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
+            formset = ScenarioFormSet(request.POST)
+            if formset.is_valid():
+                compo.scenario = formset.get_scenario()
+        
+                if 'add' in request.POST:
+                    compo.addPerson()
+                    
+                if 'remove' in request.POST:
+                    compo.scenario.rmvIndiv(compo.scenario.nbIndiv()-1)
 
+                formset = compo.gen_formset()
+                request.session['compo'] = compo
+                
+                if 'submit' in request.POST:
+                    compo.scenario.genNbEnf()
+                    ok = True
+                    ok = build_simu(compo.scenario)
+                    print 'is it ok ? :', ok
+                    #return (request, 'simulation/menage.html', {'formset' : formset})
+            
     else:
         
-        formset = scenario2formset(scenario)
-        request.session['scenario'] = scenario
+        formset = compo.gen_formset()
+        request.session['compo'] = compo
 
     return render(request, 'simulation/menage.html', {'formset' : formset})
 
 
-def formset2scenario(formset):
-    scenario = Scenario()
-    for form in formset.cleaned_data:
-        scenario.addIndiv( form['noi'], form['birth'], form['quifoy'], form['quifam'])        
-    return scenario
+def build_simu(scenario):
+    simu = Simu(scenario=scenario)
+    simu.set_date()
+    msg = simu.scenario.check_consistency()
+    if msg:
+        print 'inconsistent scenario'
+    simu.set_param()
+    x = simu.compute()
+    for child in x.children:
+            for child2 in child.children:
+                print child2.code
+                print child2._vals
+    return True
+
+def logement(request):
+    if request.method == 'POST':
+        logeform = LogementForm(request.POST)
+        if logeform.is_valid():
+            logeform.cleaned_data
+            #return HttpResponseRedirect(reverse('simulations.views.resultats', form)) # Redirect after POST
+            return render_to_response('simulation/logement.html', {'logementform': logeform})
+    else:
+        logeform = LogementForm()
+    c = {'logementform': logeform}
+    c.update(csrf(request))
+    return render_to_response('simulation/logement.html', c)
 
 
-def scenario2formset(scenario):
-    var_list = ['noi', 'birth', 'idfoy', 'quifoy', 'idfam', 'quifam']
-    
-    convert = dict(idfoy = "noidec", idfam ="noichef")
-    zero_start = [ "idfoy", "idfam", "noi"]
-    initial = []    
 
-    for noi, indiv in scenario.indiv.iteritems():
-        new_form = {}
-        for var in var_list:
-            if var == "noi":
-                new_form[var] = noi
-            elif var in convert.keys():
-                new_form[var] = indiv[convert[var]]
-            else:
-                new_form[var] = indiv[var]       
-            if var in zero_start:
-                new_form[var] += 1
-                
-        initial.append(new_form)
-        
-    ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
-    return ScenarioFormSet(initial=initial)
 
-#    for indinv in formset['noiindiv']
+# for indinv in formset['noiindiv']

@@ -16,29 +16,13 @@ from django.forms.fields import CheckboxInput
 
 QUIFOY = (('vous', 'Vous'), ('conj', 'Conjoint'), ('pac', 'Personne à charge'))
 QUIFAM = (('parent_1', 'parent 1'), ('parent_2', 'parent 2'), ('enfant', 'enfant'))
+SO = (('locataire', 'Locataire'), ('proprio_non_acce', 'Propriétaire non accédant'), ('proprio_acce', 'Propriétaire accédant'))
 
 register = template.Library()
 
 @register.filter(name='is_checkbox')
 def is_checkbox(value):
     return isinstance(value, CheckboxInput)
-
-#class Individual(models.Model):
-#    noindiv = models.IntegerField(label = 'n°', initial = 1)
-#    birth   = models.DateField(widget = SelectDateWidget(), initial = timezone.now())
-#    noidec  = models.IntegerField(label = 'Numéro de déclaration', initial = 1)
-#    quifoy  = models.CharField(label = 'Position déclaration impôts',choices = QUIFOY)
-#    remplirdeclar = models.BooleanField(required = False, initial = True, label = 'Foyer')
-#    noifam = models.IntegerField(label = 'Numéro de famille', initial = 1)
-#    quifam = models.CharField(label = 'Position déclaration impôts',choices = QUIFAM)
-#        
-#    def __unicode__(self):
-#        return self.noindiv
-#    
-#class IndividualForm(ModelForm):
-#    class Meta:
-#        model = Individual
-
 
 class IndividualForm(Form):
     noi = IntegerField(label = 'n°')
@@ -50,25 +34,63 @@ class IndividualForm(Form):
     quifam = ChoiceField(label = 'Position famille', choices = QUIFAM )
 
 
-
-
-#class IndividuForm(forms.Form):
-#    def __init__(self, indiv = None):
-#        super(IndividuForm, self).__init__()
-#    # indiv est un dict de dict. La clé est le noi de l'individu
-#    # Exemple :
-#    # 0: {'quifoy': 'vous', 'noi': 0, 'quifam': 'parent 1', 'noipref': 0, 'noidec': 0, 
-#    #     'birth': datetime.date(1980, 1, 1), 'quimen': 'pref', 'noichef': 0}
-#        if indiv == None:
-#            indiv = {0: {'quifoy': 'vous', 'noi': 0, 'quifam': 'parent 1', 'noipref': 0, 'noidec': 0,
-#                         'birth': datetime.date(1980, 1, 1), 'quimen': 'pref', 'noichef': 0} 
-
-
 #class MenageForm(forms.Form):
 #    def __init__(self, *args, **kwargs):
 #        scenario = kwargs.pop('scenario')
 #        super(MenageForm, self).__init__(*args, **kwargs)
 #            for individual in 
 
+class LogementForm(Form):
+    so = ChoiceField(label = "Statut d'occupation",choices = SO)
+    loyer = IntegerField(label = 'Loyer')
+    code_postal = IntegerField(label = 'Code postal')
+    zone_apl = IntegerField(label = 'Zone allocation')
 
+#class Logement(QDialog, Ui_Logement):
+#    def __init__(self, scenario, parent = None):
+#        super(Logement, self).__init__(parent)
+#        self.setupUi(self)
+#        self.parent = parent
+#        self.scenario = scenario
+#        self.spinCP.setValue(scenario.menage[0]['code_postal'])
+#        self.spinLoyer.setValue(scenario.menage[0]['loyer'])
+#        self.comboSo.setCurrentIndex(scenario.menage[0]['so']-1)
+#                        
+#        code_file = open('data/code_apl', 'r')
+#        code_dict = pickle.load(code_file)
+#        code_file.close()
+#
+#        def update_ville(code):        
+#            if str(code) in code_dict:
+#                commune = code_dict[str(code)]
+#                self.bbox.button(QDialogButtonBox.Ok).setEnabled(True)
+#            else:
+#                commune = ("Ce code postal n'est pas reconnu", '2')
+#                self.bbox.button(QDialogButtonBox.Ok).setEnabled(False)
+#                
+#            self.commune.setText(commune[0])
+#            self.spinZone.setValue(int(commune[1]))
+#
+#        update_ville(self.spinCP.value())
+#
+#        self.connect(self.spinCP, SIGNAL('valueChanged(int)'), update_ville)
+#        
+#        def so_changed(value):
+#            if value in (0,1):
+#                self.spinLoyer.setValue(0)
+#                self.spinLoyer.setEnabled(False)
+#            else:
+#                self.spinLoyer.setValue(500)
+#                self.spinLoyer.setEnabled(True)
+#                
+#        self.connect(self.comboSo, SIGNAL('currentIndexChanged(int)'), so_changed)
+#        self.connect(self.bbox, SIGNAL("accepted()"), SLOT("accept()"))
+#        self.connect(self.bbox, SIGNAL("rejected()"), SLOT("reject()"))
+#        
+#    def accept(self):
+#        self.scenario.menage[0].update({'loyer': int(self.spinLoyer.value()),
+#                                        'so': int(self.comboSo.currentIndex()+1),
+#                                        'zone_apl': int(self.spinZone.value()),
+#                                        'code_postal': int(self.spinCP.value())})
+#        QDialog.accept(self)
 

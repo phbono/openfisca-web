@@ -1,14 +1,6 @@
 <form method="POST" action="/simulation/menage/">{% csrf_token %}
-	 <table>
-	  {{ formset.as_table }}
-	 </table>
-  <input type=submit value="Submit">
-  <input type=submit value="Add">
-  <input type=submit value="Remove">
-</form>
-
-<form method="POST" action="/simulation/menage/">{% csrf_token %}
-{{ formset.non_form_errors.as_ul }}
+{{ formset.non_field_errors }}
+{{ formset.management_form }}
 <table id="formset" class="form">
 {% for form in formset.forms %}
   {% if forloop.first %}
@@ -34,7 +26,9 @@
   </tr>
 {% endfor %}
 </table>
-<input type=submit value="Submit">
-  <input type=submit value="Add">
-  <input type=submit value="Remove">
+  <input type="button" value="logement" onclick="window.open('http://127.0.0.1:8000/simulation/logement/','mywindow','width=600,height=400')"> 
+  <input type=submit name="submit" value="Submit">
+  <input type=submit name="add"    value="Add">
+  <input type=submit name="remove" value="Remove">
+  <input type=submit name="reset"  value="Reset">
 </form>
