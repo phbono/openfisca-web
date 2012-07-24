@@ -33,7 +33,7 @@ from django.template import RequestContext
 #        'form-TOTAL_FORMS': u'2',
 #        'form-INITIAL_FORMS': u'2',
 #        'form-MAX_NUM_FORMS': u'10',
-#        }
+#        }fggfgfhgfgh
 ##indivform = IndividuFormSet(data)
 
 
