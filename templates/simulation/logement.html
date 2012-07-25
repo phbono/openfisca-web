@@ -1,9 +1,14 @@
 <form action="/simulation/logement/" method="post">{% csrf_token %}
-    {% for field in logementform %}
+<table>
+	{% for field in logementform %}
+        <tr>
         <div class="fieldWrapper">
             {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
+            <td>{{ field.label_tag }} :</td> <td>{{ field }}</td>
         </div>
+        </tr>
     {% endfor %}
-    <p><input type="submit" value="Lancer la simulation" /></p>
+</table>
+	<input type="reset" value="Cancel", onclick="window.close()">
+	<input type="submit" value="OK", onclick="window.close()">
 </form>

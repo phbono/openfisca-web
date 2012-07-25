@@ -1,3 +1,11 @@
+<script>
+function PopupCenter(pageURL, title,w,h) {
+var left = (screen.width/2)-(w/2);
+var top = (screen.height/2)-(h/2);
+var targetWin = window.open (pageURL, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+}
+</script>
+
 <form method="POST" action="/simulation/menage/">{% csrf_token %}
 {{ formset.non_field_errors }}
 {{ formset.management_form }}
@@ -26,7 +34,7 @@
   </tr>
 {% endfor %}
 </table>
-  <input type="button" value="logement" onclick="window.open('http://127.0.0.1:8000/simulation/logement/','mywindow','width=600,height=400')"> 
+  <input type="button" value="logement" onclick="PopupCenter('http://127.0.0.1:8000/simulation/logement/', 'logement',500,200)">
   <input type=submit name="submit" value="Submit">
   <input type=submit name="add"    value="Add">
   <input type=submit name="remove" value="Remove">

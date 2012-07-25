@@ -42,9 +42,9 @@ class IndividualForm(Form):
 
 class LogementForm(Form):
     so = ChoiceField(label = "Statut d'occupation",choices = SO)
-    loyer = IntegerField(label = 'Loyer')
-    code_postal = IntegerField(label = 'Code postal')
-    zone_apl = IntegerField(label = 'Zone allocation')
+    loyer = IntegerField(label = 'Loyer', initial = 500)
+    code_postal = IntegerField(label = 'Code postal', initial = 69001)
+    zone_apl = IntegerField(label = 'Zone allocation logement', initial = 2)
 
 #class Logement(QDialog, Ui_Logement):
 #    def __init__(self, scenario, parent = None):
