@@ -2,7 +2,7 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render, render_to_response
-from mahdi.models import IndividualForm, Declar1Form, Declar2Form, Declar3Form
+from mahdi.models import IndividualForm, Declar1Form, Declar2Form, Declar3Form, Declar4Form, Declar5Form
 from django.forms.formsets import formset_factory
 
 from mahdi.lanceur import Simu, Compo, BaseScenarioFormSet
@@ -85,7 +85,7 @@ def declar02(request):
 #        if form.is_valid():
         print 'POST'
     else:
-        form = Declar1Form() 
+        form = Declar2Form() 
 
     return render(request, 'mahdi/declar02.html', {'form' : form})   
     
@@ -93,27 +93,39 @@ from france.data import InputTable
 from core.datatable import DataTable
     
 def declar03(request):
-    form = Declar3Form(description= DataTable(InputTable).description)
+    description = DataTable(InputTable).description
+    form = Declar3Form(description = description)
         
     if request.method == 'POST':
 #        if form.is_valid():
         print 'POST'
     else:
-        form = Declar1Form() 
+        form = Declar3Form(description = description) 
 
     return render(request, 'mahdi/declar03.html', {'form' : form})
 
-
 def declar04(request):
-    form = Declar2Form()
+    form = Declar4Form()
         
     if request.method == 'POST':
 #        if form.is_valid():
         print 'POST'
     else:
-        form = Declar1Form() 
+        form = Declar4Form() 
 
     return render(request, 'mahdi/declar04.html', {'form' : form})
+
+def declar05(request):
+    form = Declar5Form()
+        
+    if request.method == 'POST':
+#        if form.is_valid():
+        print 'POST'
+    else:
+        form = Declar5Form() 
+
+    return render(request, 'mahdi/declar05.html', {'form' : form})
+
 
 
 # MOVE this to somewhere else !

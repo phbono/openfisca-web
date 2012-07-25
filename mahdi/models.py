@@ -101,7 +101,6 @@ class Declar1Form(Form):
     statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))
     
     def __init__(self, *args, **kwargs):
-        #extra = kwargs.pop('extra')
         super(Declar1Form, self).__init__(*args, **kwargs)
 
         birth_dates = ['birthv','birthc'] + ['birth' + str(i) for i in range(1,10)]
@@ -115,7 +114,6 @@ class Declar1Form(Form):
 
 class Declar2Form(Form):
     def __init__(self, *args, **kwargs):
-        #extra = kwargs.pop('extra')
         super(Declar2Form, self).__init__(*args, **kwargs)
 
         cases = ['caseL', 'caseE', 'caseN', 'caseP', 'caseF', 'caseW', 'caseS', 'caseG', 'caseT']  
@@ -130,15 +128,37 @@ class Declar3Form(Form):
         description = kwargs.pop('description')
         print description.col_names
         super(Declar3Form, self).__init__(*args, **kwargs)
-        fields = ['sali', 'choi', 'fra', 'cho_ld', 'hsup', 'ppe_tp_sa',
-                   'ppe_du_sa',  'f1bl', 'f1cb', 'f1dq', 
-                   'rsti', 'f1at', 'alr']
+        fields = ['f1aj', 'f1bj', 'f1cj', 'f1dj', 
+                  'f1ap', 'f1bp', 'f1cp', 'f1dp', 
+                  'f1ak', 'f1bk', 'f1ck', 'f1dk', 
+                  'f1ai', 'f1bi', 'f1ci', 'f1di', 
+                  'f1au', 'f1bu', 'f1cu', 'f1du', 
+                  'f1ax', 'f1bx', 'f1cx', 'f1dx',
+                  'f1av', 'f1bv', 'f1cv', 'f1dv', 
+                  'f1bl', 'f1cb',  'f1dq', 
+                  'f1as', 'f1bs', 'f1cs', 'f1ds', 
+                  'f1at', 'f1bt',
+                  'f1ao', 'f1bo', 'f1co', 'f1do']
+    
+        convert = dict()
+        abcd = ['a', 'b', 'c', 'd']
+        for l in abcd: 
+            convert['f1'+l+'j' ] = 'sali'
+            convert['f1'+l+'p' ] = 'choi'
+            convert['f1'+l+'k' ] = 'fra'
+            convert['f1'+l+'i' ] = 'cho_ld'
+            convert['f1'+l+'u' ] = 'hsup'
+            convert['f1'+l+'x' ] = 'ppe_tp_sa'
+            convert['f1'+l+'v' ] = 'ppe_du_sa'
+            convert['f1'+l+'s' ] = 'rsti'
+            convert['f1'+l+'o' ] = 'alr'             
+        
         for field in fields:
             
             print 'is ' + str(field) + ' in description :' + str( field in description.col_names) 
             
-            if field not in ['f1bl', 'f1cb', 'f1dq', 'f1dq', 'f1at']:
-                col = description.get_col(field)
+            if field not in ['f1bl', 'f1cb', 'f1dq', 'f1at', 'f1bt']:
+                col = description.get_col(convert[field])
                 if col.label is not None:
                     label = col.label
                 else:
@@ -151,24 +171,45 @@ class Declar3Form(Form):
                 if isinstance(col, BoolCol):
                     self.fields[field] = MyBooleanField(label=label)
 
-#    f1aj = MyIntegerField()
-#    f1ap = MyIntegerField()
-#    f1ak = MyIntegerField()
-#    f1ai = MyBooleanField() cho_ld
-
-#    f1au = MyIntegerField() hsup
-#    f1ax = MyBooleanField()
-#    f1av = MyIntegerField()
-
-#    f1bl = MyIntegerField()
-#    f1cb = MyIntegerField()
-#    f1dq = MyIntegerField()
-
-#    f1as = MyIntegerField() rsti
-#    f1ao = MyIntegerField() alr
+            elif field in ['f1bl', 'f1cb', 'f1dq']:                
+                self.fields[field] = MyIntegerField(label='')
 
     
+class Declar4Form(Form):
+    def __init__(self, *args, **kwargs):
+        int_fields = ['f2da', 'f2dh', 'f2ee', 'f2dc', 'f2fu', 'f2ch', 
+                      'f2ts', 'f2go', 'f2tr', 'f2cg', 'f2bh', 'f2ca', 
+                      'f2ab', 'f2bg', 'f2aa', 'f2al', 'f2am', 'f2an',
+                      'f2dm', 'f3vg', 'f3vh', 'f3vt', 'f3vu', 'f3vv',
+                       'f4be', 'f4ba', 'f4bb', 'f4bc', 'f4bd', 'f4bf',
+                       'f0xx']
+        for field in int_fields:
+            self.fields[field] = MyIntegerField(label='') 
+    
 
+class Declar5Form(Form):
+    def __init__(self, *args, **kwargs):
+        int_fields = ['f6de', 'f6gi', 'f6gj', 'f6el', 'f6em', 'f6gp',
+                      'f6gu', 'f6dd', 'f6rs', 'f6rt', 'f6ru', 'f6ss',
+                      'f6st', 'f6su', 'faps', 'fapt', 'fapu', 'fbps',
+                      'fbpt', 'fbpu', 'fcps', 'fcpt', 'fcpu', 'fdps', 
+                      'fdpt', 'fdpu', 'f6qs', 'f6qt', 'f6qu', 'f7ue',
+                      'f7ud', 'f7uf', 'f7xs', 'f7xt', 'f7xu', 'f7xw', 
+                      'f7xy', 'f7ac', 'f7ae', 'f7ag', 'f7db', 'f7df',
+                      'f7dl', 'f7vy', 'f7vz', 'f7vw', 'f7vx', 'f7wn',
+                      'f7wo', 'f7wm', 'f7wp', 'f7wq', 'f7wh', 'f7wk',
+                      'f7wf', 'f7wi', 'f7wj', 'f7wl', 'f8by', 'f8cy',
+                      'f8ut', 'f8tf', 'f8ti', 'f8tl', 'f8tk', 'f7we']
+    
+        bool_fields = ['f6qr', 'f6qw', 'f7dq', 'f7dg']
+    
+        for field in int_fields:
+            self.fields[field] = MyIntegerField()
+           
+        for field in bool_fields:
+            self.fields[field] = MyBooleanField()
+        
+        
 #class IndividuForm(forms.Form):
 #    def 
 #    __init__(self, indiv = None):
