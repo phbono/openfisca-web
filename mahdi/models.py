@@ -19,6 +19,9 @@ QUIFOY = (('vous', 'Vous'), ('conj', 'Conjoint')) +  tuple(pacs)
 enfants = [ ('enf' + str(i), 'enfant')  for i in range(1,10)]
 QUIFAM = (('chef', 'parent 1'), ('part', 'parent 2')) + tuple(enfants) 
 
+SO = (('locataire', 'Locataire'), ('proprio_non_acce', 'Propriétaire non accédant'), ('proprio_acce', 'Propriétaire accédant'))
+
+
 register = template.Library()
 
 @register.filter(name='is_checkbox')
@@ -52,15 +55,11 @@ class IndividualForm(Form):
     quifam = ChoiceField(label = 'Position famille', choices = QUIFAM )
 
 
-
-#class DeclarForm(Form):
-#    def __init__(self, *args, **kwargs):
-#        extra = kwargs.pop('extra')
-#        super(Form, self).__init__(*args, **kwargs)
-#
-#        for code, label in extra:
-#            
-#            self.fields[code] = CharField(label=label)
+class LogementForm(Form):
+    so = ChoiceField(label = "Statut d'occupation",choices = SO)
+    loyer = IntegerField(label = 'Loyer', initial = 500)
+    code_postal = IntegerField(label = 'Code postal', initial = 69001)
+    zone_apl = IntegerField(label = 'Zone allocation logement', initial = 2)
 
 
 class MyBooleanField(BooleanField):
@@ -126,7 +125,6 @@ from core.columns import BoolCol, IntCol
 class Declar3Form(Form):
     def __init__(self, *args, **kwargs):
         description = kwargs.pop('description')
-        print description.col_names
         super(Declar3Form, self).__init__(*args, **kwargs)
         fields = ['f1aj', 'f1bj', 'f1cj', 'f1dj', 
                   'f1ap', 'f1bp', 'f1cp', 'f1dp', 
@@ -155,7 +153,7 @@ class Declar3Form(Form):
         
         for field in fields:
             
-            print 'is ' + str(field) + ' in description :' + str( field in description.col_names) 
+#            print 'is ' + str(field) + ' in description :' + str( field in description.col_names) 
             
             if field not in ['f1bl', 'f1cb', 'f1dq', 'f1at', 'f1bt']:
                 col = description.get_col(convert[field])
