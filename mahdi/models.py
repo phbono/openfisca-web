@@ -177,6 +177,7 @@ class Declar3Form(Form):
     
 class Declar4Form(Form):
     def __init__(self, *args, **kwargs):
+        super(Declar4Form, self).__init__(*args, **kwargs)
         int_fields = ['f2da', 'f2dh', 'f2ee', 'f2dc', 'f2fu', 'f2ch', 
                       'f2ts', 'f2go', 'f2tr', 'f2cg', 'f2bh', 'f2ca', 
                       'f2ab', 'f2bg', 'f2aa', 'f2al', 'f2am', 'f2an',
@@ -189,6 +190,7 @@ class Declar4Form(Form):
 
 class Declar5Form(Form):
     def __init__(self, *args, **kwargs):
+        super(Declar5Form, self).__init__(*args, **kwargs)
         int_fields = ['f6de', 'f6gi', 'f6gj', 'f6el', 'f6em', 'f6gp',
                       'f6gu', 'f6dd', 'f6rs', 'f6rt', 'f6ru', 'f6ss',
                       'f6st', 'f6su', 'faps', 'fapt', 'fapu', 'fbps',
