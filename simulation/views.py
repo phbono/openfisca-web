@@ -7,7 +7,7 @@ from django.forms.formsets import formset_factory
 from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
 from simulation.lanceur import Simu, Compo, BaseScenarioFormSet
-
+from django.template import RequestContext
 
 
 
@@ -79,8 +79,7 @@ def logement(request):
         logeform = LogementForm(request.POST)
         if logeform.is_valid():
             logeform.cleaned_data
-            #return HttpResponseRedirect(reverse('simulations.views.resultats', form)) # Redirect after POST
-            return render_to_response('simulation/logement.html', {'logementform': logeform})
+            return render_to_response('simulation/logement.html', {'logementform': logeform}, context_instance=RequestContext(request))
     else:
         logeform = LogementForm()
     c = {'logementform': logeform}
