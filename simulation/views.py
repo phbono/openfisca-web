@@ -74,19 +74,47 @@ def build_simu(scenario):
                 print child2._vals
     return True
 
+#def logement(request):
+#    if request.method == 'POST':
+#        logementform = LogementForm(request.POST)
+#        if logementform.is_valid():
+#            logementform.cleaned_data
+#            return render_to_response('simulation/logement.html', {'logementform': logementform}, context_instance=RequestContext(request))
+#    else:
+#        logementform = LogementForm()
+#    c = {'logementform': logementform}
+#    c.update(csrf(request))
+#    return render_to_response('simulation/logement.html', c)
+
 def logement(request):
+
+    logementform = request.session.get('logementform',default=None)
+    if logementform == None:
+        logementform = LogementForm()
+
     if request.method == 'POST':
-        logeform = LogementForm(request.POST)
-        if logeform.is_valid():
-            logeform.cleaned_data
-            return render_to_response('simulation/logement.html', {'logementform': logeform}, context_instance=RequestContext(request))
+
+        if 'cancel' in request.POST:
+            if 'logementform' in request.session:
+                del request.session['logementform']
+            logementform = LogementForm()
+            request.session['logementform'] = logementform
+
+        else:
+            logementform = LogementForm(request.POST)
+            if logementform.is_valid():
+                logementform.cleaned_data
+                request.session['logementform'] = logementform
+                
+                if 'ok' in request.POST:
+                    print "tu as appuyé sur ok"
+                    return render_to_response('simulation/logement.html', {'logementform': logementform}, context_instance=RequestContext(request))
+            
     else:
-        logeform = LogementForm()
-    c = {'logementform': logeform}
-    c.update(csrf(request))
-    return render_to_response('simulation/logement.html', c)
+        logementform = LogementForm()
+        request.session['logementform'] = logementform
 
-
+    return render(request, 'simulation/logement.html', {'logementform' : logementform})
 
 
 # for indinv in formset['noiindiv']
