@@ -17,6 +17,7 @@ def index(request):
 # return render_to_response('simulation/menage.html', {'formset': form})
 
 def menage(request):
+
     compo = request.session.get('compo',default=None)
     if compo == None:
         compo = Compo()
@@ -50,7 +51,7 @@ def menage(request):
                     ok = True
                     ok = build_simu(compo.scenario)
                     print 'is it ok ? :', ok
-                    #return (request, 'simulation/menage.html', {'formset' : formset})
+                    #return (request, 'mahdi/menage.html', {'formset' : formset})    
             
     else:
         
@@ -58,7 +59,6 @@ def menage(request):
         request.session['compo'] = compo
 
     return render(request, 'simulation/menage.html', {'formset' : formset})
-
 
 def build_simu(scenario):
     simu = Simu(scenario=scenario)
@@ -87,13 +87,13 @@ def build_simu(scenario):
 #    return render_to_response('simulation/logement.html', c)
 
 def logement(request):
-
+    
     logementform = request.session.get('logementform',default=None)
+    
     if logementform == None:
         logementform = LogementForm()
 
     if request.method == 'POST':
-
         if 'cancel' in request.POST:
             if 'logementform' in request.session:
                 del request.session['logementform']
@@ -105,10 +105,10 @@ def logement(request):
             if logementform.is_valid():
                 logementform.cleaned_data
                 request.session['logementform'] = logementform
-                
+                print "je suis avant le dernier if" 
                 if 'ok' in request.POST:
                     print "tu as appuyé sur ok"
-                    return render_to_response('simulation/logement.html', {'logementform': logementform}, context_instance=RequestContext(request))
+                    #return render_to_response('simulation/logement.html', {'logementform': logementform}, context_instance=RequestContext(request))
             
     else:
         logementform = LogementForm()

@@ -34,7 +34,7 @@ from france.data import InputTable
 from france.model import ModelFrance
 from core.datatable import DataTable, SystemSf
 
-from simulation.models import IndividualForm
+from mahdi.models import IndividualForm
 
 class BaseScenarioFormSet(BaseFormSet):
 #    def clean(self):
