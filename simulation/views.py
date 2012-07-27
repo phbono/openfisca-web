@@ -92,28 +92,14 @@ def logement(request):
     
     if logementform == None:
         logementform = LogementForm()
-
+    request.session['logementform'] = logementform
     if request.method == 'POST':
-        if 'cancel' in request.POST:
-            if 'logementform' in request.session:
-                del request.session['logementform']
-            logementform = LogementForm()
+
+        logementform = LogementForm(request.POST)
+        if logementform.is_valid():
+            logementform.cleaned_data
             request.session['logementform'] = logementform
-
-        else:
-            logementform = LogementForm(request.POST)
-            if logementform.is_valid():
-                logementform.cleaned_data
-                request.session['logementform'] = logementform
-                print "je suis avant le dernier if" 
-                if 'ok' in request.POST:
-                    print "tu as appuyé sur ok"
-                    #return render_to_response('simulation/logement.html', {'logementform': logementform}, context_instance=RequestContext(request))
-            
-    else:
-        logementform = LogementForm()
-        request.session['logementform'] = logementform
-
+     
     return render(request, 'simulation/logement.html', {'logementform' : logementform})
 
 
