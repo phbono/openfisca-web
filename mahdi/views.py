@@ -8,12 +8,10 @@ from mahdi.models import (IndividualForm,
                           Declar1Form, Declar2Form, Declar3Form, Declar4Form, Declar5Form)
 
 from django.forms.formsets import formset_factory
-
 from mahdi.lanceur import Simu, Compo, BaseScenarioFormSet
-
 from france.data import InputTable
 from core.datatable import DataTable
-
+from django.template import RequestContext
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
@@ -67,18 +65,59 @@ def menage(request):
     return render(request, 'mahdi/menage.html', c)
 
 
+from lanceur import get_zone
 
 def logement(request):
+
+    print 'entering logement'
+    print request.method
+    compo = request.session.get('compo', default=None)
+    
     if request.method == 'POST':
         logt_form = LogementForm(request.POST)
         if logt_form.is_valid():
-            logt_form.cleaned_data
-            return render_to_response('mahdi/logement.html', {'logementform': logt_form}, context_instance=RequestContext(request))
+            vals = logt_form.cleaned_data
+            print request.POST    
+            if 'submit' in request.POST:
+                print 'logement submit'
+                code_postal = vals['code_postal']
+                commune = get_zone(code_postal)
+                print 'commune :  ', commune[0]
+                print 'zone :  '   , commune[1]    
+
+                
+                compo.set_logement(vals)
+                
+                
+                print compo.scenario
+            elif 'reset' in request.POST:
+                print 'reset'
+            elif 'validate' in request.POST:
+                print 'logement validate' 
+                
+    
+#    if request.method == 'GET':
+#        logt_form = LogementForm(request.GET)
+#        if logt_form.is_valid():
+#            if 'validate' in request.GET:
+#                print 'logement validate' 
+#                postal_code = vals['postal_code']
+#                commune = get_zone(postal_code)
+#                print 'commune :  ', commune[0]
+#                print 'zone :  '   , commune[1]
+#            elif 'reset' in request.GET:
+#                print 'reset'
+            
+#            return render_to_response('mahdi/logement.html', {'logementform': logt_form}, context_instance=RequestContext(request))
     else:
         logt_form = LogementForm()
-    c = {'logementform': logt_form}
+    c = {'logt_form': logt_form}
     c.update(csrf(request))
-    return render_to_response('mahdi/logement.html', c)
+    return render(request, 'mahdi/logement.html', c)
+
+#    return render_to_response('mahdi/logement.html', {'logementform': logt_form}, context_instance=RequestContext(request))
+    
+#    return render_to_response('mahdi/logement.html', c)
 
 
 

@@ -21,6 +21,7 @@ encoding//srcopen/core/datatable.py=utf-8
 encoding//srcopen/core/description.py=utf-8
 encoding//srcopen/core/utils.py=utf-8
 encoding//srcopen/france/data.py=utf-8
+encoding//srcopen/france/lgtm.py=utf-8
 encoding//srcopen/openFisca.py=utf-8
 encoding//srcopen/parametres/paramData.py=utf-8
 encoding//srcopen/views/ui_composition.py=utf-8

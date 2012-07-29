@@ -221,13 +221,49 @@ class Compo(object):
                 print form.is_valid()
                 if form.is_valid():
                     print form.cleaned_data
-
-        
         return formset
 
 
+    def set_logement(self, values):
+        '''
+        Sets logement values in scenario
+        '''
+        loyer = values['loyer']
+        so = values['so']
+        zone_apl = values['zone_apl']
+        code_postal = values['code_postal']
+        self.scenario.menage[0].update({'loyer': int(loyer),
+                                        'so': int(so),
+                                        'zone_apl': int(zone_apl),
+                                        'code_postal': int(code_postal)})
+
+    
 
 
+# TODO move this to main openfisca branch
+import pickle
+
+def get_zone(postal_code):
+    '''
+    Takes the postal_code as input argument
+    Returns a list with the name of the commune and the apl zone  
+    '''
+    # TODO: REMOVE THIS PART
+    cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
+    predirectory = os.path.dirname(cmd_folder)
+    directory = os.path.join(predirectory,'srcopen')
+    
+    code = postal_code
+    code_file = open(os.path.join(directory,'data/code_apl'), 'r')
+    code_dict = pickle.load(code_file)
+    code_file.close()
+
+    if str(code) in code_dict:
+        commune = code_dict[str(code)]
+    else:
+        commune = ("Ce code postal n'est pas reconnu", '2')
+        
+    return commune    
 
 
 def main():

@@ -19,7 +19,19 @@ QUIFOY = (('vous', 'Vous'), ('conj', 'Conjoint')) +  tuple(pacs)
 enfants = [ ('enf' + str(i), 'enfant')  for i in range(1,10)]
 QUIFAM = (('chef', 'parent 1'), ('part', 'parent 2')) + tuple(enfants) 
 
-SO = (('locataire', 'Locataire'), ('proprio_non_acce', 'Propriétaire non accédant'), ('proprio_acce', 'Propriétaire accédant'))
+SO = ((1, u"Accédant à la propriété"),
+      (2, u"Propriétaire non accédant"), 
+      (3, u"Locataire d'un logement HLM"),
+      (4, u"Locataire ou sous-locataire d'un logement loué vide non-HLM"),
+      (5, u"Locataire ou sous-locataire d'un logement loué meublé ou d'une chambre d'hôtel"),
+      (6, u"Logé gratuitement par des parents, des amis ou l'employeur"))
+
+# u"Non renseigné",
+# u"Propriétaire (non accédant) du logement",
+# u"Locataire d'un logement HLM",
+# u"Locataire ou sous-locataire d'un logement loué vide non-HLM",
+# u"Locataire ou sous-locataire d'un logement loué meublé ou d'une chambre d'hôtel",
+# u"Logé gratuitement par des parents, des amis ou l'employeur"]))
 
 
 register = template.Library()

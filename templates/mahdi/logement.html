@@ -12,7 +12,8 @@
         </tr>
     {% endfor %}
 </table>
-	<input type="reset" value="Cancel", onclick="window.close()">
-	<input type="submit" value="OK", onclick="window.close()">
+	<input type=submit name="reset"   value="Réinitialiser">
+	<input type=submit name="submit"  value="Soumettre">
+	<input type=submit name="validate" value="Valider", onclick="window.close()">
 </form>
 {% endblock %}
