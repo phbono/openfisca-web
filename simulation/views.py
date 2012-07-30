@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
 from simulation.lanceur import Simu, Compo, BaseScenarioFormSet
 from django.template import RequestContext
-from lanceur import get_zone
+from simulation.lanceur import get_zone
 
 
 def index(request):
@@ -92,31 +92,33 @@ def logement(request):
     print 'entering logement'
     print request.method
     compo = request.session.get('compo', default=None)
+    logt_form = request.session.get('logt_form',default=None)
     
+    if logt_form == None:
+        logt_form = LogementForm()
+        
     if request.method == 'POST':
         logt_form = LogementForm(request.POST)
         if logt_form.is_valid():
             vals = logt_form.cleaned_data
+            request.session['logt_form'] = logt_form
             print request.POST    
             if 'submit' in request.POST:
                 print 'logement submit'
                 code_postal = vals['code_postal']
                 commune = get_zone(code_postal)
                 print 'commune :  ', commune[0]
-                print 'zone :  '   , commune[1]    
-
-                
+                print 'zone :  '   , commune[1]
                 compo.set_logement(vals)
-                
-                
                 print compo.scenario
+                return render(request, 'simulation/logement.html', {'logt_form' : logt_form, 'commune' : commune[0], 'zone' : commune[1]})
             elif 'reset' in request.POST:
+                logt_form = LogementForm()
                 print 'reset'
             elif 'validate' in request.POST:
-                print 'logement validate' 
-    else:
-        logt_form = LogementForm()
-    c = {'logt_form': logt_form}
+                print 'logement validate'
+                
+    c = {'logt_form': logt_form, 'commune' : "pas pour l'instant", 'zone' : "pas pour l'instant"}
     c.update(csrf(request))
     return render(request, 'simulation/logement.html', c)
 

@@ -16,8 +16,12 @@ from django.forms.fields import CheckboxInput
 
 QUIFOY = (('vous', 'Vous'), ('conj', 'Conjoint'), ('pac', 'Personne à charge'))
 QUIFAM = (('parent_1', 'parent 1'), ('parent_2', 'parent 2'), ('enfant', 'enfant'))
-SO = (('locataire', 'Locataire'), ('proprio_non_acce', 'Propriétaire non accédant'), ('proprio_acce', 'Propriétaire accédant'))
-
+SO = ((1, u"Accédant à la propriété"),
+      (2, u"Propriétaire non accédant"), 
+      (3, u"Locataire d'un logement HLM"),
+      (4, u"Locataire ou sous-locataire d'un logement loué vide non-HLM"),
+      (5, u"Locataire ou sous-locataire d'un logement loué meublé ou d'une chambre d'hôtel"),
+      (6, u"Logé gratuitement par des parents, des amis ou l'employeur"))
 register = template.Library()
 
 @register.filter(name='is_checkbox')

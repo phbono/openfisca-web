@@ -38,7 +38,7 @@ from core.datatable import DataTable, SystemSf
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-from mahdi.models import IndividualForm
+from simulation.models import IndividualForm
 
 class BaseScenarioFormSet(BaseFormSet):
 #    def clean(self):

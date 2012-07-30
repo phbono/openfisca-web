@@ -8,7 +8,14 @@
         </div>
         </tr>
     {% endfor %}
+    <tr>
+    <td>Commune :</td> <td>{{ commune }}</td>
+    </tr>
+    <tr>
+    <td>Zone allocation logement :</td> <td>{{ zone }}</td>
+    </tr>
 </table>
+
 	<input type=submit name="reset"   value="Réinitialiser">
 	<input type=submit name="submit"  value="Soumettre">
 	<input type=submit name="validate" value="Valider", onclick="window.close()">
