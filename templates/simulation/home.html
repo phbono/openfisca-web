@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//FR"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+<head>
+	<title>{% block title %}mSim{% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="/static/css/home.css" >
+</head>
+<body>
+<div id='container'>
+	<div id="header"></div>
+	<div id='columns'>
+	    <div id="content">
+	        {% block content %}
+	        <a href = '/simulation/menage/'>Commencer une nouvelle simulation</a>
+			{% endblock %}
+	    </div>
+    </div>
+</div>
+</body>
+</html>

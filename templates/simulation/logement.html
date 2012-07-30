@@ -1,6 +1,6 @@
 <form action="/simulation/logement/" method="post">{% csrf_token %}
 <table>
-	{% for field in logementform %}
+	{% for field in logt_form %}
         <tr>
         <div class="fieldWrapper">
             {{ field.errors }}
@@ -9,6 +9,7 @@
         </tr>
     {% endfor %}
 </table>
-	<input type="reset"  name="cancel" value="cancel", onclick="window.close()">
-	<input type="submit" name"ok"      value="ok",     onclick="window.close()">
+	<input type=submit name="reset"   value="Réinitialiser">
+	<input type=submit name="submit"  value="Soumettre">
+	<input type=submit name="validate" value="Valider", onclick="window.close()">
 </form>
