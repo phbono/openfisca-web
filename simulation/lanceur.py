@@ -230,11 +230,11 @@ class Compo(object):
         '''
         loyer = values['loyer']
         so = values['so']
-        zone_apl = values['zone_apl']
+        #zone_apl = values['zone_apl']
         code_postal = values['code_postal']
         self.scenario.menage[0].update({'loyer': int(loyer),
                                         'so': int(so),
-                                        'zone_apl': int(zone_apl),
+                                        #'zone_apl': int(zone_apl),
                                         'code_postal': int(code_postal)})
 
     
