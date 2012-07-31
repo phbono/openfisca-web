@@ -38,7 +38,7 @@ from core.datatable import DataTable, SystemSf
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-from mahdi.models import IndividualForm
+from mahdi.models import IndividualForm, Declar1Form
 
 class BaseScenarioFormSet(BaseFormSet):
 #    def clean(self):
@@ -49,12 +49,21 @@ class BaseScenarioFormSet(BaseFormSet):
     
     def get_scenario(self):
         scenario = Scenario()
+        print self.cleaned_data
         for form in self.cleaned_data:
             noi, birth = form['noi']-1, form['birth']
             idfoy, quifoy, idfam, quifam = form['idfoy']-1, form['quifoy'], form['idfam']-1, form['quifam']
-            scenario.addIndiv(noi, birth, quifoy, quifam)
-            scenario._assignPerson(noi, quifoy = quifoy, foyer = idfoy, quifam = quifam, famille = idfam)
             
+            scenario.indiv.update({noi:{'birth':birth, 
+                                'inv'     : 0,
+                                'alt'     : 0,
+                                'activite': 0,
+                                'quifoy'  : quifoy,
+                                'quifam'  : quifam,
+                                'noidec'  : idfoy,
+                                'noichef' : idfam,
+                                'noipref' : 0,
+                                'statmarit': 2}})
         return scenario
 
 
@@ -192,37 +201,67 @@ class Compo(object):
         
         convert = dict(idfoy = "noidec", idfam ="noichef")
         zero_start = [ "idfoy", "idfam", "noi"]
-        initial = []    
-    
+
+        ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet)
+        
+        data = {'form-TOTAL_FORMS': scenario.nbIndiv(),
+                'form-INITIAL_FORMS': scenario.nbIndiv(),
+                'form-MAX_NUM_FORMS': u'',}
+        
         for noi, indiv in scenario.indiv.iteritems():
-            new_form = {}
             for var in scenario_var_list:
                 if var == "noi":
-                    new_form[var] = noi
+                    data['form-' + str(noi)+'-' + str(var)] = noi
                 elif var in convert.keys():
-                    new_form[var] = indiv[convert[var]]
+                    data['form-' + str(noi)+'-' + str(var)] = indiv[convert[var]]
                 else:
-                    new_form[var] = indiv[var]       
+                    data['form-' + str(noi)+'-' + str(var)] = indiv[var]       
                 if var in zero_start:
-                    new_form[var] += 1
-            
-            print 'new_form for noi: ' + str(noi)        
-            print new_form        
-            initial.append(new_form)
-            
-            
-        ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
+                    data['form-' + str(noi)+'-' + str(var)] += 1
+                
+
+        formset = ScenarioFormSet(data=data)
         
-        formset = ScenarioFormSet(initial=initial)
-        
-        print formset.is_valid()
-        if True: #formset.is_valid():
-            for form in formset.forms:
-                print form.is_valid()
-                if form.is_valid():
-                    print form.cleaned_data
+#        print 'is menage formset valid :', formset.is_valid()
+#        if  formset.is_valid():
+#            for form in formset.forms:
+#                if form.is_valid():
+#                    print form.cleaned_data
+#                else:
+#                    for name, field in form.fields.iteritems():
+#                        print name
+#                        print field.__dict__
+#                        
+                    
         return formset
 
+
+
+    def create_declar1(self, idfoy = None):
+        
+        if idfoy is None:
+            idfoy = 0
+        
+        data = dict(statmarit=2)
+        for indiv in self.scenario.indiv.itervalues():
+            if indiv['noidec'] == idfoy:            
+                data[indiv['quifoy']] = indiv['birth']
+                if indiv['quifoy'] == 'vous':
+                    data['statmarit'] = int(1)
+        
+
+        form = Declar1Form(data)
+
+        for name, field in form.fields.iteritems():
+            if name in data.keys():
+                field.required = True
+            else:
+                field.required = False
+
+        return form
+    
+    
+    
 
     def set_logement(self, values):
         '''
@@ -237,8 +276,18 @@ class Compo(object):
                                         'zone_apl': int(zone_apl),
                                         'code_postal': int(code_postal)})
 
-    
+    def get_declar1(self, data = None, idfoy = 0):
+        '''
+        Sets declar1 values in compo.scenario  from a Delcar1Form
+        '''
 
+        statmarit = data['statmarit']
+        
+        for indiv in self.scenario.indiv.itervalues(): 
+            if indiv['noidec'] == idfoy:
+                if indiv['quifoy'] in ['vous', 'conj']:
+                    indiv['statmarit'] = statmarit
+                indiv['birth'] = data[indiv['quifoy']]
 
 # TODO move this to main openfisca branch
 import pickle

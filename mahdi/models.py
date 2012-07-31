@@ -107,51 +107,24 @@ class MyDateField(DateField):
         DateField.__init__(self, widget= wid, **fieldAttr)
 
 
-from mahdi.lanceur import Compo
 
 class Declar1Form(Form):
-    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))   
-    statmarit.initial = 2
-
+    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')), initial=2)   
     
+
     def __init__(self, *args, **kwargs):
+
         super(Declar1Form, self).__init__(*args, **kwargs)
-        
-        
-    def set_declar(self, compo = None, idfoy = None):
-        if 'compo' is not None:
-            compo = compo
-        else:
-            compo = Compo()
-        
-        if 'idfoy' is not None:
-            idfoy = idfoy
-        else:
-            idfoy = 0
-        
-        scenario = compo.scenario
-        birth_dates = {}
-        print scenario
-        for dct in scenario.indiv.itervalues():        
-            if dct['noidec'] == idfoy:
-                print dct
-                quifoy = dct['quifoy']
-                if quifoy == "vous":
-                    statmarit = dct['statmarit']
-                birth_dates[quifoy] = dct['birth']
-                
-        
-        for quifoy, birth_date in birth_dates.iteritems():
+        required = False
+        for quifoy in [x[0] for x in QUIFOY]:
             if quifoy == 'vous': 
                 label = "Vous"
-                self.fields['statmarit'].value = statmarit
+                required = False
             elif quifoy =='conj':
                 label = "Votre conjoint"
             else:
                 label = "Personne à charge"
-            
-            self.fields[quifoy] = MyDateField(initial = birth_date,
-                                              label = label)
+            self.fields[quifoy] = MyDateField(label = label, required = required)
 
 class Declar2Form(Form):
     def __init__(self, *args, **kwargs):
@@ -252,24 +225,7 @@ class Declar5Form(Form):
             self.fields[field] = MyBooleanField()
         
         
-#class IndividuForm(forms.Form):
-#    def 
-#    __init__(self, indiv = None):
-#        super(IndividuForm, self).__init__()
-#    # indiv est un dict de dict. La clé est le noi de l'individu
-#    # Exemple :
-#    # 0: {'quifoy': 'vous', 'noi': 0, 'quifam': 'parent 1', 'noipref': 0, 'noidec': 0, 
-#    #     'birth': datetime.date(1980, 1, 1), 'quimen': 'pref', 'noichef': 0}
-#        if indiv == None:
-#            indiv = {0: {'quifoy': 'vous', 'noi': 0, 'quifam': 'parent 1', 'noipref': 0, 'noidec': 0,
-#                         'birth': datetime.date(1980, 1, 1), 'quimen': 'pref', 'noichef': 0} 
 
-
-#class MenageForm(forms.Form):
-#    def __init__(self, *args, **kwargs):
-#        scenario = kwargs.pop('scenario')
-#        super(MenageForm, self).__init__(*args, **kwargs)
-#            for individual in 
 
 
 
