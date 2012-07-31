@@ -29,17 +29,7 @@ var targetWin = window.open (pageURL, title, 'toolbar=no, location=no, directori
 	<div id='columns'>
 	    <div id="content">
 	        {% block content %}
-	        <a href = '/simulation/menage/'>Commencer une nouvelle simulation</a>
-			{% endblock %}
-	    </div>
-    </div>
-</div>
-
-
-
-
-{% block content %}
-<form method="POST" action="/simulation/menage/">{% csrf_token %}
+	       <form method="POST" action="/simulation/menage/">{% csrf_token %}
 {{ formset.non_field_errors }}
 {{ formset.management_form }}
 <table id="formset" class="form">
@@ -73,7 +63,10 @@ var targetWin = window.open (pageURL, title, 'toolbar=no, location=no, directori
   <input type=submit name="remove" value="Remove">
   <input type=submit name="reset"  value="Reset">
 </form>
-{% endblock %}
+			{% endblock %}
+	    </div>
+    </div>
+</div>
 
 </body>
 </html>
