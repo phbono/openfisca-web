@@ -1,0 +1,9 @@
+<form method="POST" action="/simulation/menage/">{% csrf_token %}
+	 <table>
+	  {{ formset.as_table }}
+	 </table>
+  <input type=submit name="submit" value="Submit">
+  <input type=submit name="add"    value="Add">
+  <input type=submit name="remove" value="Remove">
+  <input type=submit name="reset"  value="Reset">
+</form>
