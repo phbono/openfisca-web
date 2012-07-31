@@ -40,19 +40,42 @@
             <td nowrap="nowrap">&nbsp;</td>
             <td colspan="4" class="titre01"><span class="titre">Dates de naissance du foyer fiscal</span></td>
           </tr>
-		  {% for field in form %}
-		  {% if field.name != "statmarit" %}
           <tr>
             <td>&nbsp;</td>
-            <td> {{ field.label }}</td>
-            <td colspan="3"><span class="fdcellule"> {{ field }} </span>{{form.vous.errors}}</td>
+            <td>Vous:</td>
+            <td colspan="3"><span class="fdcellule"> {{ form.birthv }}</span>{{form.birthv.errors}}</td>
           </tr>
           <tr>
             <td height="2" width="14"></td>
             <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
           </tr>
-          {% endif %}
-          {% endfor %}
+          <tr>
+            <td>&nbsp;</td>
+            <td>Votre conjoint:</td>
+            <td colspan="3"><span class="fdcellule"> {{form.birthc}} </span></td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>1ère personne à charge:</td>
+            <td colspan="3"><span class="fdcellule"> {{form.birth1}} </span></td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>2ème personne à charge:</td>
+            <td colspan="3"><span class="fdcellule"> {{form.birth2}} </span></td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+          </tr>
           <tr>
             <td width="14">&nbsp;</td>
             <td>&nbsp;</td>

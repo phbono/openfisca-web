@@ -40,18 +40,36 @@
             <td nowrap="nowrap">&nbsp;</td>
             <td colspan="4" class="titre01"><span class="titre">Dates de naissance du foyer fiscal</span></td>
           </tr>
-		  {% for field in form %}
-		  {% if field.name != "statmarit" %}
           <tr>
             <td>&nbsp;</td>
-            <td> {{ field.label }}</td>
-            <td colspan="3"><span class="fdcellule"> {{ field }} </span>{{form.vous.errors}}</td>
+            <td>Vous:</td>
+            <td colspan="3"><span class="fdcellule"> {{ form.vous }}</span>{{form.vous.errors}}</td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+          </tr>
+          {% if form.conj %}
+          <tr>
+            <td>&nbsp;</td>
+            <td>Votre conjoint:</td>
+            <td colspan="3"><span class="fdcellule"> {{form.vous}} </span></td>
           </tr>
           <tr>
             <td height="2" width="14"></td>
             <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
           </tr>
           {% endif %}
+          {% for pac in [ 'pac' + str(i) for i in range(1,10)] %}
+          <tr>
+            <td>&nbsp;</td>
+            <td> personne à charge  {{ pac }}:</td>
+            <td colspan="3"><span class="fdcellule"> {{ form[pac] }} </span></td>
+          </tr>
+          <tr>
+            <td height="2" width="14"></td>
+            <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
+          </tr>
           {% endfor %}
           <tr>
             <td width="14">&nbsp;</td>

@@ -66,7 +66,7 @@ class IndividualForm(Form):
     idfam = IntegerField(label = 'Numéro de famille')
     quifam = ChoiceField(label = 'Position famille', choices = QUIFAM )
 
-
+    
 class LogementForm(Form):
     so = ChoiceField(label = "Statut d'occupation",choices = SO)
     loyer = IntegerField(label = 'Loyer', initial = 500)
@@ -98,7 +98,7 @@ class MyIntegerField(IntegerField):
 
 
 class MyDateField(DateField):
-    def __init__(self, kwargs = {}):
+    def __init__(self, **kwargs):
         wid = SelectDateWidget(years = [i for i in reversed(xrange(1900,2010))])
         fieldAttr = {'required' : False, 
                      'localize': True
@@ -107,21 +107,51 @@ class MyDateField(DateField):
         DateField.__init__(self, widget= wid, **fieldAttr)
 
 
+from mahdi.lanceur import Compo
 
 class Declar1Form(Form):
-    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))
+    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))   
+    statmarit.initial = 2
+
     
     def __init__(self, *args, **kwargs):
         super(Declar1Form, self).__init__(*args, **kwargs)
-
-        birth_dates = ['birthv','birthc'] + ['birth' + str(i) for i in range(1,10)]
-        for birth_date in birth_dates:
-            if birth_date == 'birthv':
-                self.fields[birth_date] = MyDateField({'required':True})
+        
+        
+    def set_declar(self, compo = None, idfoy = None):
+        if 'compo' is not None:
+            compo = compo
+        else:
+            compo = Compo()
+        
+        if 'idfoy' is not None:
+            idfoy = idfoy
+        else:
+            idfoy = 0
+        
+        scenario = compo.scenario
+        birth_dates = {}
+        print scenario
+        for dct in scenario.indiv.itervalues():        
+            if dct['noidec'] == idfoy:
+                print dct
+                quifoy = dct['quifoy']
+                if quifoy == "vous":
+                    statmarit = dct['statmarit']
+                birth_dates[quifoy] = dct['birth']
+                
+        
+        for quifoy, birth_date in birth_dates.iteritems():
+            if quifoy == 'vous': 
+                label = "Vous"
+                self.fields['statmarit'].value = statmarit
+            elif quifoy =='conj':
+                label = "Votre conjoint"
             else:
-                self.fields[birth_date] = MyDateField()
-
-
+                label = "Personne à charge"
+            
+            self.fields[quifoy] = MyDateField(initial = birth_date,
+                                              label = label)
 
 class Declar2Form(Form):
     def __init__(self, *args, **kwargs):

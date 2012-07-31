@@ -19,7 +19,7 @@ def index(request):
 #    return render_to_response('mahdi/menage.html', {'formset': form})
 
 def menage(request):
-    compo = request.session.get('compo',default=None)
+    compo = request.session.get('compo', default=None)
     if compo == None:
         compo = Compo()
 
@@ -140,25 +140,35 @@ def home(request):
     return render_to_response('mahdi/home.html')
 
 def declar01(request):
+    compo = request.session.get('compo' , default=None)
+    print compo.scenario
+    form = Declar1Form()
+    idfoy = 0
+    form.set_declar(compo=compo , idfoy=idfoy)
 
-    form = Declar1Form() 
 #    print form.is_valid()
 #    if form.is_valid():
 #        print form.cleaned_data
 
     if request.method == 'POST':
-        print 'is the for valid :', form.is_valid()
-        if True:
-#        if form.is_valid():
-
+        print 'is the form valid :', form.is_valid()
+        
+#        if True:    
+        if form.is_valid():
 
             # TODO do things
             request.session.modified = True
             return HttpResponseRedirect('/mahdi/declar02/')
-        print 'POST'
-    else:
-        form = Declar1Form() 
 
+    
+        else:
+            print 'is bound :', form.is_bound
+            for field in form:
+                if field._errors: 
+                    print field.name
+                    print field._errors
+                    
+                
     return render(request, 'mahdi/declar01.html', {'form' : form})   
         
 
