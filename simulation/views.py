@@ -50,17 +50,16 @@ def menage(request):
                 
                 if 'submit' in request.POST:
                     compo.scenario.genNbEnf()
-                    simu = build_simu(compo.scenario)                    
-                    request.session['simu'] = simu
-                    print 'fin de la soumission'
-                    return HttpResponseRedirect('simulation/output/')  
+                    ok = True
+                    ok = build_simu(compo.scenario)
+                    print 'is it ok ? :', ok
+                    #return (request, 'mahdi/menage.html', {'formset' : formset})    
             
     else:
         
         formset = compo.gen_formset()
         request.session['compo'] = compo
-    c = {'formset': formset}
-    c.update(csrf(request))
+
     return render(request, 'simulation/menage.html', {'formset' : formset})
 
 #def logement(request):
@@ -112,6 +111,12 @@ def logement(request):
 def output(request):
     print 'entrée dans output'
     return render_to_response('simulation/output.html')
+
+def graphtest(request):
+    return render_to_response('simulation/graphtest.html')
+
+def graphtest2(request):
+    return render_to_response('simulation/graphtest2.html')
 
 def graph(request):
     simu = request.session['simu']

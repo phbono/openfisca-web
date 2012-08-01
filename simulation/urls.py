@@ -11,4 +11,6 @@ urlpatterns = patterns('',
     url(r'^declar04/$', 'simulation.views.declar04'),
     url(r'^declar05/$', 'simulation.views.declar05'), # TODO clean this decla0i
     url(r'^output/$', 'simulation.views.output'),
-    url(r'^graph.png$', 'simulation.views.graph', name='graph'),)  
+    url(r'^graph.png$', 'simulation.views.graph', name='graph'),
+    url(r'^graphtest$', 'simulation.views.graphtest'),
+    url(r'^graphtest2$', 'simulation.views.graphtest2'),)
