@@ -22,6 +22,8 @@ def menage(request):
     compo = request.session.get('compo', default=None)
     if compo == None:
         compo = Compo()
+    if compo.scenario.nbIndiv() == 0:
+        compo = Compo()
 
     if request.method == 'POST':
 
@@ -139,37 +141,38 @@ def graph(request):
 def home(request):
     return render_to_response('mahdi/home.html')
 
-def declar01(request):
-    compo = request.session.get('compo' , default=None)
-    print compo.scenario
-    form = Declar1Form()
-    idfoy = 0
-    form.set_declar(compo=compo , idfoy=idfoy)
+    
 
-#    print form.is_valid()
-#    if form.is_valid():
-#        print form.cleaned_data
+def declar01(request):
+
+    compo = request.session.get('compo' , default=None)
+    idfoy = 0
+    print 'entering declar1'
+
+    for indiv in compo.scenario.indiv.itervalues():
+        print indiv
+
 
     if request.method == 'POST':
-        print 'is the form valid :', form.is_valid()
-        
-#        if True:    
+        form = Declar1Form(request.POST)
         if form.is_valid():
+            compo.get_declar1(data=form.cleaned_data, idfoy = idfoy)
+            form = compo.create_declar1(idfoy=idfoy)        
+            request.session['compo'] = compo
+            
+            
+            #return HttpResponseRedirect('/mahdi/declar02/')
 
-            # TODO do things
-            request.session.modified = True
-            return HttpResponseRedirect('/mahdi/declar02/')
-
+    else:
+        form  = compo.create_declar1(idfoy=idfoy)
+        print 'is bound :', form.is_bound
+            
     
-        else:
-            print 'is bound :', form.is_bound
-            for field in form:
-                if field._errors: 
-                    print field.name
-                    print field._errors
-                    
-                
-    return render(request, 'mahdi/declar01.html', {'form' : form})   
+    request.session['compo'] = compo
+            
+    c = {'form': form}
+    c.update(csrf(request))
+    return render(request, 'mahdi/declar01.html', c)   
         
 
 def declar02(request):

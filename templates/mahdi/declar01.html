@@ -41,6 +41,7 @@
             <td colspan="4" class="titre01"><span class="titre">Dates de naissance du foyer fiscal</span></td>
           </tr>
 		  {% for field in form %}
+		  {% if field.field.required  %}
 		  {% if field.name != "statmarit" %}
           <tr>
             <td>&nbsp;</td>
@@ -51,6 +52,7 @@
             <td height="2" width="14"></td>
             <td height="4" background="/static/image/ligne01.gif" class="fdcellule" colspan="4"></td>
           </tr>
+          {% endif %}
           {% endif %}
           {% endfor %}
           <tr>
