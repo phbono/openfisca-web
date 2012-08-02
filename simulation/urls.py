@@ -13,4 +13,5 @@ urlpatterns = patterns('',
     url(r'^output/$', 'simulation.views.output'),
     url(r'^graph.png$', 'simulation.views.graph', name='graph'),
     url(r'^graphtest$', 'simulation.views.graphtest'),
-    url(r'^graphtest2$', 'simulation.views.graphtest2'),)
+    url(r'^graphtest2$', 'simulation.views.graphtest2'),
+    url(r'^graphtest3$', 'simulation.views.graphtest3'),)

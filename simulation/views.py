@@ -9,7 +9,8 @@ from django.template import RequestContext
 from simulation.lanceur import get_zone, Simu, Compo, BaseScenarioFormSet
 from simulation.models import (IndividualForm,
                           LogementForm,
-                          Declar1Form, Declar2Form, Declar3Form, Declar4Form, Declar5Form)
+                          Declar1Form, Declar2Form, Declar3Form, Declar4Form, Declar5Form,
+                          MonthlyWeatherByCity)
 from france.data import InputTable
 from core.datatable import DataTable
 
@@ -239,3 +240,43 @@ def build_simu(scenario):
 
 
 #    for indinv in formset['noiindiv']
+
+from chartit import DataPool, Chart
+
+def graphtest3(request):
+    #Step 1: Create a DataPool with the data we want to retrieve.
+    weatherdata = DataPool(
+           series=
+            [{'options': {
+                'source': MonthlyWeatherByCity.objects.all()},
+              'terms': [
+                'month',
+                'houston_temp', 
+                'boston_temp']}
+             ])
+
+    #Step 2: Create the Chart object
+    cht = Chart(
+            datasource = weatherdata,
+            series_options =
+              [{'options':{
+                  'type': 'line',
+                  'stacking': False},
+                'terms':{
+                  'month': [
+                    'boston_temp',
+                    'houston_temp']
+                  }}],
+            chart_options =
+              {'title': {
+                   'text': 'Weather Data of Boston and Houston'},
+               'xAxis': {
+                    'title': {
+                       'text': 'Month number'}}})
+
+    #Step 3: Send the chart object to the template.
+    return render_to_response('simulation/graphtest3.html', {'weatherchart': cht})
+
+
+
+
