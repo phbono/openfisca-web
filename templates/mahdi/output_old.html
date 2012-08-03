@@ -1,0 +1,16 @@
+{% extends "home.html" %}
+
+{% block title %}Output{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div>
+	<span>Résulat de la simulation</span>
+</div>
+<div align="center">
+	<img src= /graph.png >
+</div>
+<div><a href="/nouvellesimulation/">Nouvelle simulation</a></div>
+<div><a href="/parametres/">Choisir un scenario de réforme</a></div>
+
+{% endblock %}

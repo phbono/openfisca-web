@@ -2,7 +2,6 @@
 
 #from django.db import models
 import datetime
-from django.db import models
 
 from django.forms import Form, IntegerField, DateField, ChoiceField, BooleanField, TextInput  
 
@@ -13,10 +12,11 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.fields import CheckboxInput
 
 
-
-pacs   = [ ('pac' + str(i), 'Personne à charge')  for i in range(1,10)]
+#pacs   = [ ('pac' + str(i), 'Personne à charge')  for i in range(1,10)]
+pacs = [('pac', 'Personne à charge')]
 QUIFOY = (('vous', 'Vous'), ('conj', 'Conjoint')) +  tuple(pacs)
-enfants = [ ('enf' + str(i), 'enfant')  for i in range(1,10)]
+# enfants = [ ('enf' + str(i), 'enfant')  for i in range(1,10)]
+enfants = [ ('enf' , 'Enfant' )]
 QUIFAM = (('chef', 'parent 1'), ('part', 'parent 2')) + tuple(enfants) 
 
 SO = ((1, u"Accédant à la propriété"),
@@ -26,12 +26,6 @@ SO = ((1, u"Accédant à la propriété"),
       (5, u"Locataire ou sous-locataire d'un logement loué meublé ou d'une chambre d'hôtel"),
       (6, u"Logé gratuitement par des parents, des amis ou l'employeur"))
 
-# u"Non renseigné",
-# u"Propriétaire (non accédant) du logement",
-# u"Locataire d'un logement HLM",
-# u"Locataire ou sous-locataire d'un logement loué vide non-HLM",
-# u"Locataire ou sous-locataire d'un logement loué meublé ou d'une chambre d'hôtel",
-# u"Logé gratuitement par des parents, des amis ou l'employeur"]))
 
 
 register = template.Library()
@@ -39,39 +33,6 @@ register = template.Library()
 @register.filter(name='is_checkbox')
 def is_checkbox(value):
     return isinstance(value, CheckboxInput)
-
-#class Individual(models.Model):
-#    noindiv = models.IntegerField(label = 'n°', initial = 1)
-#    birth   = models.DateField(widget = SelectDateWidget(), initial = timezone.now())
-#    noidec  = models.IntegerField(label = 'Numéro de déclaration', initial = 1)
-#    quifoy  = models.CharField(label = 'Position déclaration impôts',choices = QUIFOY)
-#    remplirdeclar = models.BooleanField(required = False, initial = True, label = 'Foyer')
-#    noifam = models.IntegerField(label = 'Numéro de famille', initial = 1)
-#    quifam = models.CharField(label = 'Position déclaration impôts',choices = QUIFAM)
-#        
-#    def __unicode__(self):
-#        return self.noindiv
-#    
-#class IndividualForm(ModelForm):
-#    class Meta:
-#        model = Individual
-
-
-class IndividualForm(Form):
-    noi = IntegerField(label = 'n°')
-    birth   = DateField(widget = SelectDateWidget(years=range(1900, datetime.date.today().year)))
-    idfoy  = IntegerField(label = 'Numéro de déclaration')
-    quifoy  = ChoiceField(label = 'Position déclaration impôts',choices = QUIFOY)
-    #remplirdeclar = BooleanField(required = False, initial = True, label = 'Foyer')
-    idfam = IntegerField(label = 'Numéro de famille')
-    quifam = ChoiceField(label = 'Position famille', choices = QUIFAM )
-
-    
-class LogementForm(Form):
-    so = ChoiceField(label = "Statut d'occupation",choices = SO)
-    loyer = IntegerField(label = 'Loyer', initial = 500)
-    code_postal = IntegerField(label = 'Code postal', initial = 69001)
-    zone_apl = IntegerField(label = 'Zone allocation logement', initial = 2)
 
 
 class MyBooleanField(BooleanField):
@@ -107,6 +68,29 @@ class MyDateField(DateField):
         DateField.__init__(self, widget= wid, **fieldAttr)
 
 
+class IndividualForm(Form):
+    noi     = IntegerField(label = u"N° de l'individu", min_value=1, max_value=99)
+    birth   = DateField(widget = SelectDateWidget(years=range(1900, datetime.date.today().year)))
+    idfoy   = IntegerField(label = 'N° de déclaration',min_value=1, max_value=99)
+    quifoy  = ChoiceField(label = 'Position déclaration impôts',choices = QUIFOY)
+    #remplirdeclar = BooleanField(required = False, initial = True, label = 'Foyer')
+    idfam   = IntegerField(label = 'N° de famille', min_value=1, max_value=99)
+    quifam  = ChoiceField(label = 'Position famille', choices = QUIFAM )
+    statmarit = ChoiceField(label = 'Statut marital', choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))
+    activite  = ChoiceField(choices = ((0, u"Actif occupé"), (1, u"Chômeur"), (2, u"Étudiant, élève"), (3, u"Retraité"), (4, u"Autre inactif")))
+    inv       = MyBooleanField(label = 'Invalide', initial=False)
+    alt       = MyBooleanField(label = 'Garde alternée', initial=False)
+
+    
+class LogementForm(Form):
+    so = ChoiceField(label = "Statut d'occupation",choices = SO)
+    loyer = IntegerField(label = 'Loyer', initial = 500,min_value=0, max_value=100000)
+    code_postal = IntegerField(label = 'Code postal', initial = 69001)
+    zone_apl = IntegerField(label = 'Zone allocation logement', initial = 2)
+
+
+
+
 
 class Declar1Form(Form):
     statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')), initial=2)   
@@ -132,7 +116,7 @@ class Declar2Form(Form):
 
         cases = ['caseL', 'caseE', 'caseN', 'caseP', 'caseF', 'caseW', 'caseS', 'caseG', 'caseT']  
         for case in cases:
-            self.fields[case] = MyBooleanField()
+            self.fields[case] = MyBooleanField(initial=False)
             
 
 from core.columns import BoolCol, IntCol
@@ -176,8 +160,7 @@ class Declar3Form(Form):
                     label = col.label
                 else:
                     label = field    
-                print col
-                print label
+
                 
                 if isinstance(col, IntCol):
                     self.fields[field] = MyIntegerField(label=label)
@@ -185,7 +168,7 @@ class Declar3Form(Form):
                     self.fields[field] = MyBooleanField(label=label)
 
             elif field in ['f1bl', 'f1cb', 'f1dq']:                
-                self.fields[field] = MyIntegerField(label='')
+                self.fields[field] = MyIntegerField()
 
     
 class Declar4Form(Form):

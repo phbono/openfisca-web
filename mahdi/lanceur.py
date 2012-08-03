@@ -28,6 +28,8 @@ from django.forms.formsets import formset_factory, BaseFormSet
 
 from core.utils import gen_output_data
 from core.utils import Scenario
+
+
 from widgets.Output import drawBareme
 from parametres.paramData import XmlReader, Tree2Object
 from Config import CONF
@@ -38,22 +40,16 @@ from core.datatable import DataTable, SystemSf
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-from mahdi.models import IndividualForm, Declar1Form
+from mahdi.models import IndividualForm, Declar1Form, Declar3Form 
+from mahdi.utils import extract_foy_indiv, foy2of_dict, field2quifoy
 
-class BaseScenarioFormSet(BaseFormSet):
-#    def clean(self):
-#        """Checks consistency of a formset"""
-#        if any(self.errors):
-#            # Don't bother validating the formset unless each form is valid on its own
-#            return
-    
+
+class BaseScenarioFormSet(BaseFormSet):    
     def get_scenario(self):
         scenario = Scenario()
-        print self.cleaned_data
         for form in self.cleaned_data:
             noi, birth = form['noi']-1, form['birth']
             idfoy, quifoy, idfam, quifam = form['idfoy']-1, form['quifoy'], form['idfam']-1, form['quifam']
-            
             scenario.indiv.update({noi:{'birth':birth, 
                                 'inv'     : 0,
                                 'alt'     : 0,
@@ -64,6 +60,9 @@ class BaseScenarioFormSet(BaseFormSet):
                                 'noichef' : idfam,
                                 'noipref' : 0,
                                 'statmarit': 2}})
+            
+            scenario._assignPerson(noi, quifoy = quifoy, foyer = idfoy, quifam = quifam, famille = idfam)
+            scenario.updateMen()
         return scenario
 
 
@@ -76,7 +75,7 @@ class Simu(object):
         #self.scenario.genNbEnf()
         
         
-    def set_config(self, directory = None, nmen=1):
+    def set_config(self, directory = None, nmen=101):
         '''
         Sets the directory where to find the openfisca source and adjust some directories
         '''
@@ -87,8 +86,8 @@ class Simu(object):
             predirectory = os.path.dirname(cmd_folder)
             directory = os.path.join(predirectory,'srcopen')
 
-        CONF.set('paths', 'data_dir',os.path.join(directory,'data'))
-        CONF.set('simulation', 'nmen',1)
+        CONF.set('paths', 'data_dir', os.path.join(directory,'data'))
+        CONF.set('simulation', 'nmen', nmen)
 
          
     def set_scenario(self, scenario=None):
@@ -155,7 +154,7 @@ class Simu(object):
         Builds graph
         '''
         data = self.data_courant
-        xaxis = self.xaxis
+        xaxis = 'sal' #self.xaxis
         reforme = False
         dataDefault = None
         legend = True
@@ -180,14 +179,10 @@ class Compo(object):
     def nbRow(self):
         return self.scenario.nbIndiv()
 
-    def addPerson(self):
-        
+    def addPerson(self):        
         noi = self.nbRow()
-        print noi
         if noi == 1: self.scenario.addIndiv(noi, birth = date(1975,1,1), quifoy = 'conj', quifam = 'part')
         else:        self.scenario.addIndiv(noi, birth = date(2000,1,1), quifoy = 'pac' , quifam = 'enf')
-        print 'scenario at the end of addPerson'
-        print self.scenario
 
     def rmvPerson(self, noi = None):
         pass
@@ -195,9 +190,8 @@ class Compo(object):
     def gen_formset(self):
         
         scenario = self.scenario
-        print 'scenario at the beginning of gen_formset'
-        print scenario
-        scenario_var_list = ['noi', 'birth', 'idfoy', 'quifoy', 'idfam', 'quifam']
+        print self.scenario
+        scenario_var_list = ['noi', 'birth', 'idfoy', 'quifoy', 'idfam', 'quifam', 'statmarit', 'activite']
         
         convert = dict(idfoy = "noidec", idfam ="noichef")
         zero_start = [ "idfoy", "idfam", "noi"]
@@ -212,6 +206,10 @@ class Compo(object):
             for var in scenario_var_list:
                 if var == "noi":
                     data['form-' + str(noi)+'-' + str(var)] = noi
+                elif var == "quifoy" and indiv[var][:3] == "pac":
+                    data['form-' + str(noi)+'-' + str(var)] = "pac"
+                elif var == "quifam" and indiv[var][:3] == "enf":
+                    data['form-' + str(noi)+'-' + str(var)] = "enf"
                 elif var in convert.keys():
                     data['form-' + str(noi)+'-' + str(var)] = indiv[convert[var]]
                 else:
@@ -222,23 +220,15 @@ class Compo(object):
 
         formset = ScenarioFormSet(data=data)
         
-#        print 'is menage formset valid :', formset.is_valid()
-#        if  formset.is_valid():
-#            for form in formset.forms:
-#                if form.is_valid():
-#                    print form.cleaned_data
-#                else:
-#                    for name, field in form.fields.iteritems():
-#                        print name
-#                        print field.__dict__
-#                        
-                    
+
         return formset
 
 
 
     def create_declar1(self, idfoy = None):
-        
+        '''
+        Creates a Declar1Form from compo.scenario data
+        '''
         if idfoy is None:
             idfoy = 0
         
@@ -249,7 +239,6 @@ class Compo(object):
                 if indiv['quifoy'] == 'vous':
                     data['statmarit'] = int(1)
         
-
         form = Declar1Form(data)
 
         for name, field in form.fields.iteritems():
@@ -257,10 +246,57 @@ class Compo(object):
                 field.required = True
             else:
                 field.required = False
-
         return form
     
-    
+    def create_declar3(self, idfoy = None, description=None):
+        '''
+        Creates a Declar3Form from compo.scenario data
+        '''
+        if idfoy is None:
+            idfoy = 0
+            
+        if description is None:
+            print 'a description should be provided' # TODO convert this to exception
+            
+        declar = self.scenario.declar[idfoy]
+        cleaned_indiv = extract_foy_indiv(self.scenario, idfoy=idfoy)
+        data = declar
+        
+        def indiv2foy(varname, quifoy):
+            '''
+            Yields the field of the foy corresponding to the varname 
+            '''
+            convert = foy2of_dict()
+            
+            value = None
+            for field in convert.keys():
+                if field2quifoy(field) == quifoy:    
+                    if convert[field] == varname:
+                        value = field
+            return value
+            
+        for person in cleaned_indiv.itervalues():
+            for varname, value in person.iteritems():
+                quifoy = person['quifoy']
+                field = indiv2foy(varname, quifoy)
+                data[field]  = value
+            
+        form = Declar3Form(data=declar, description=description)
+        return form        
+
+            
+    def create_declar(self, formClass, idfoy = None):
+        '''
+        Creates a Declar?Forms from compo.scenario data
+        Works for Declar2Form, Declar4Form, Declar5Form 
+        
+        '''
+        if idfoy is None:
+            idfoy = 0
+            
+        declar = self.scenario.declar[idfoy]
+        form = formClass(data=declar)
+        return form
     
 
     def set_logement(self, values):
@@ -289,6 +325,42 @@ class Compo(object):
                     indiv['statmarit'] = statmarit
                 indiv['birth'] = data[indiv['quifoy']]
 
+    def get_declar(self, form = None, idfoy = 0):
+        '''
+        Gets declar values in compo.scenario from DeclarForms
+        Works for Declar2Form, Declar4Form, Declar5Form 
+        
+        '''
+        declar = self.scenario.declar[idfoy]
+        data = form.cleaned_data
+        
+        for field, value in data.iteritems(): 
+            declar[field] = value
+
+    def get_declar3(self, form = None, idfoy = 0):
+        '''
+        Gets declar values in compo.scenario from Declar3Form
+        '''
+        declar = self.scenario.declar[idfoy]
+
+        # Build a dict of individulas present on the declar
+        cleaned_indiv = extract_foy_indiv(self.scenario, idfoy= idfoy)
+
+        convert = foy2of_dict()
+                        
+        data = form.cleaned_data
+        
+        for field, value in data.iteritems(): 
+            if field in convert.keys():
+                quifoy  = field2quifoy(field)
+                varname = convert[field]
+                for person in cleaned_indiv.itervalues():
+                    if person['quifoy'] == quifoy:
+                        person[varname] = value
+            else:
+                declar[field] = value
+
+
 # TODO move this to main openfisca branch
 import pickle
 
@@ -312,7 +384,7 @@ def get_zone(postal_code):
     else:
         commune = ("Ce code postal n'est pas reconnu", '2')
         
-    return commune    
+    return commune[0], commune[1]    
 
 
 def main():

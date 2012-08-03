@@ -387,7 +387,7 @@ def drawWaterfall(data, ax):
     
 def drawBareme(data, ax, xaxis, reforme = False, dataDefault = None, legend = True):
     if dataDefault == None: dataDefault = data
-
+    
     ax.figure.subplots_adjust(bottom = 0.09, top = 0.95, left = 0.11, right = 0.95)
         
     if reforme: prefix = 'Variation '

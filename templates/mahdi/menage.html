@@ -36,9 +36,39 @@ var targetWin = window.open (pageURL, title, 'toolbar=no, location=no, directori
 {% endfor %}
 </table>
   <input type="button" value="logement" onclick="PopupCenter('http://127.0.0.1:8000/mahdi/logement/', 'logement',500,200)">
-  <input type=submit name="add"    value="Add">
-  <input type=submit name="remove" value="Remove">
-  <input type=submit name="reset"  value="Reset">
-  <input type=submit name="submit" value="Submit">
-</form>
+  <input type=submit name= "add"    value="Ajouter">
+  <input type=submit name="remove" value="Retirer">
+  <input type=submit name="reset"  value="Réinitialiser">
+  <input type=submit name="validate" value="Valider">
+  <input type=submit name="submit" value="Soumettre">
+  
+<table>  
+<thead><tr>
+	  <th> Foyers </th>
+{% for foy in units.foy  %}
+{% with f=forloop.counter|stringformat:"s" %}
+{% with foyer="Foyer "|add:f %}
+{% with idfoy=foy|add:-1 %}
+	<td> 
+	<input type="button" value="{{foyer}}" onclick="window.location.href='{% url mahdi.views.declar01 idfoy %}'">
+	</td>
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endfor %}
+</table>
+<table>  
+<thead><tr>
+	  <th> Familles </th>
+{% for fam in units.fam  %}
+{% with f=forloop.counter|stringformat:"s" %}
+{% with famille="Famille "|add:f %}
+	<td> 	
+	<input type="button" value="{{famille}}"  >
+	</td>
+{% endwith %}
+{% endwith %}
+{% endfor %}
+</table>
+
 {% endblock %}
