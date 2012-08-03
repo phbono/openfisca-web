@@ -7,7 +7,12 @@ from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
 from django.template import RequestContext
 from simulation.lanceur import get_zone, Simu, Compo, BaseScenarioFormSet
-from simulation.models import IndividualForm, LogementForm
+from simulation.models import (IndividualForm,
+                          LogementForm,
+                          Declar1Form, Declar2Form, Declar3Form, Declar4Form, Declar5Form,
+                          MonthlyWeatherByCity)
+from france.data import InputTable
+from core.datatable import DataTable
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
@@ -46,32 +51,17 @@ def menage(request):
                 
                 if 'submit' in request.POST:
                     compo.scenario.genNbEnf()
-                    simu = build_simu(compo.scenario)                    
-                    request.session['simu'] = simu
-                    print 'fin de la soumission'
-                    return HttpResponseRedirect('simulation/output/')  
+                    ok = True
+                    ok = build_simu(compo.scenario)
+                    print 'is it ok ? :', ok
+                    #return (request, 'mahdi/menage.html', {'formset' : formset})    
             
     else:
         
         formset = compo.gen_formset()
         request.session['compo'] = compo
-    c = {'formset': formset}
-    c.update(csrf(request))
-    return render(request, 'simulation/menage.html', {'formset' : formset})
 
-def build_simu(scenario):
-    simu = Simu(scenario=scenario)
-    simu.set_date()
-    msg = simu.scenario.check_consistency()
-    if msg:
-        print 'inconsistent scenario'
-    simu.set_param()
-    x = simu.compute()
-    for child in x.children:
-            for child2 in child.children:
-                print child2.code
-                print child2._vals
-    return True
+    return render(request, 'simulation/menage.html', {'formset' : formset})
 
 #def logement(request):
 #    if request.method == 'POST':
@@ -123,6 +113,12 @@ def output(request):
     print 'entrée dans output'
     return render_to_response('simulation/output.html')
 
+def graphtest(request):
+    return render_to_response('simulation/graphtest.html')
+
+def graphtest2(request):
+    return render_to_response('simulation/graphtest2.html')
+
 def graph(request):
     simu = request.session['simu']
     simu.build_graph()
@@ -134,4 +130,153 @@ def graph(request):
 def home(request):
     return render_to_response('simulation/home.html')
 
-# for indinv in formset['noiindiv']
+def declar01(request):
+    compo = request.session.get('compo' , default=None)
+    print compo.scenario
+    form = Declar1Form()
+    idfoy = 0
+    form.set_declar(compo=compo , idfoy=idfoy)
+
+#    print form.is_valid()
+#    if form.is_valid():
+#        print form.cleaned_data
+
+    if request.method == 'POST':
+        print 'is the form valid :', form.is_valid()
+        
+#        if True:    
+        if form.is_valid():
+
+            # TODO do things
+            request.session.modified = True
+            return HttpResponseRedirect('/mahdi/declar02/')
+
+    
+        else:
+            print 'is bound :', form.is_bound
+            for field in form:
+                if field._errors: 
+                    print field.name
+                    print field._errors
+                    
+                
+    return render(request, 'mahdi/declar01.html', {'form' : form})   
+        
+
+def declar02(request):
+    form = Declar2Form()
+        
+    if request.method == 'POST':
+        if True:
+#        if form.is_valid():
+            request.session.modified = True
+            return HttpResponseRedirect('/mahdi/declar03/')
+    else:
+        form = Declar2Form() 
+
+    return render(request, 'mahdi/declar02.html', {'form' : form})   
+    
+    
+def declar03(request):
+    description = DataTable(InputTable).description
+    form = Declar3Form(description = description)
+        
+    if request.method == 'POST':
+        if True:
+#        if form.is_valid():
+            request.session.modified = True
+            return HttpResponseRedirect('/mahdi/declar04/')
+    else:
+        form = Declar3Form(description = description) 
+
+    return render(request, 'mahdi/declar03.html', {'form' : form})
+
+def declar04(request):
+    form = Declar4Form()
+        
+    if request.method == 'POST':
+        if True:
+#        if form.is_valid():
+            request.session.modified = True
+            return HttpResponseRedirect('/mahdi/declar05/')
+    else:
+        form = Declar4Form() 
+
+    return render(request, 'mahdi/declar04.html', {'form' : form})
+
+def declar05(request):
+    form = Declar5Form()
+        
+    if request.method == 'POST':
+        if True:
+#        if form.is_valid():
+            request.session.modified = True
+            # lancer les calculs
+    else:
+        form = Declar5Form() 
+
+    return render(request, 'mahdi/declar05.html', {'form' : form})
+
+
+
+
+# MOVE this to somewhere else !
+def build_simu(scenario):
+    simu = Simu(scenario=scenario)
+    simu.set_date()
+    msg = simu.scenario.check_consistency()
+    if msg:
+        print 'inconsistent scenario'
+    simu.set_param()
+    simu.compute()
+#    simu.build_graph()
+#    
+#    
+#    for child in x.children:
+#            for child2 in child.children:
+#                print child2.code
+#                print child2._vals
+    return simu
+
+
+#    for indinv in formset['noiindiv']
+
+from chartit import DataPool, Chart
+
+def graphtest3(request):
+    #Step 1: Create a DataPool with the data we want to retrieve.
+    weatherdata = DataPool(
+           series=
+            [{'options': {
+                'source': MonthlyWeatherByCity.objects.all()},
+              'terms': [
+                'month',
+                'houston_temp', 
+                'boston_temp']}
+             ])
+
+    #Step 2: Create the Chart object
+    cht = Chart(
+            datasource = weatherdata,
+            series_options =
+              [{'options':{
+                  'type': 'line',
+                  'stacking': False},
+                'terms':{
+                  'month': [
+                    'boston_temp',
+                    'houston_temp']
+                  }}],
+            chart_options =
+              {'title': {
+                   'text': 'Weather Data of Boston and Houston'},
+               'xAxis': {
+                    'title': {
+                       'text': 'Month number'}}})
+
+    #Step 3: Send the chart object to the template.
+    return render_to_response('simulation/graphtest3.html', {'weatherchart': cht})
+
+
+
+
