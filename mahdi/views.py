@@ -82,7 +82,7 @@ from matplotlib.figure import Figure
 from widgets.Output import drawBareme, drawWaterfall
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-def graph(request):
+def graph_old(request):
     data = request.session['data']
 #    for child in data.children:
 #        for child2 in child.children:
@@ -107,6 +107,44 @@ def graph(request):
     response= HttpResponse(content_type='image/png')
     canvas.print_png(response)
     return response
+
+
+
+from chartit import DataPool, Chart
+def graph(request):
+    data = request.session['data']
+        
+    
+
+    weatherdata = DataPool(
+           series=
+            [{'options': {
+                'source': MonthlyWeatherByCity.objects.all()},
+              'terms': [
+                'month',
+                'houston_temp', 
+                'boston_temp']}
+             ])
+
+    #Step 2: Create the Chart object
+    cht = Chart(
+            datasource = openfisca_data,
+            series_options =
+              [{'options':{
+                  'type': 'line',
+                  'stacking': False},
+                'terms':{
+                  'month': [
+                    'boston_temp',
+                    'houston_temp']
+                  }}],
+            chart_options =
+              {'title': {
+                   'text': 'Openfisca'},
+               'xAxis': {
+                    'title': {
+                       'text': 'Month number'}}})
+
 
 from lanceur import get_zone
 
@@ -275,23 +313,6 @@ def declar05(request, idfoy = None):
     return render(request, 'mahdi/declar05.html', c)   
 
 
-# MOVE this to somewhere else !
-def build_simu(scenario):
-    simu = Simu(scenario=scenario)
-    simu.set_date()
-    msg = simu.scenario.check_consistency()
-    if msg:
-        print 'inconsistent scenario'
-    simu.set_param()
-    simu.compute()
-#    simu.build_graph()
-#    
-#    
-#    for child in x.children:
-#            for child2 in child.children:
-#                print child2.code
-#                print child2._vals
-    return simu
 
 
 #import numpy as np

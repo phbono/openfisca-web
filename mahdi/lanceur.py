@@ -29,8 +29,6 @@ from django.forms.formsets import formset_factory, BaseFormSet
 from core.utils import gen_output_data
 from core.utils import Scenario
 
-
-from widgets.Output import drawBareme
 from parametres.paramData import XmlReader, Tree2Object
 from Config import CONF
 from france.data import InputTable
@@ -75,7 +73,25 @@ class Simu(object):
         #self.scenario.genNbEnf()
         
         
-    def set_config(self, directory = None, nmen=101):
+    def build(self):
+        self.set_date()
+        msg = self.scenario.check_consistency()
+        if msg:
+            print 'inconsistent scenario'
+        self.set_param()
+        self.compute()
+#    simu.build_graph()
+#    
+#    
+#    for child in x.children:
+#            for child2 in child.children:
+#                print child2.code
+#                print child2._vals
+
+
+        
+        
+    def set_config(self, directory = None, nmen=1):
         '''
         Sets the directory where to find the openfisca source and adjust some directories
         '''
@@ -149,24 +165,24 @@ class Simu(object):
         '''
         self.mode = mode 
 
-    def build_graph(self):
-        '''
-        Builds graph
-        '''
-        data = self.data_courant
-        xaxis = 'sal' #self.xaxis
-        reforme = False
-        dataDefault = None
-        legend = True
-        fig=Figure()
-        ax=fig.add_subplot(111)
-        drawBareme(data, ax, xaxis, reforme = reforme,
-                    dataDefault = dataDefault, legend = legend)
-        canvas = FigureCanvas(fig)
-        self.canvas = canvas
-#        response= HttpResponse(content_type='image/png')
-#        canvas.print_png(response)
-#        return response
+#    def build_graph(self):
+#        '''
+#        Builds graph
+#        '''
+#        data = self.data_courant
+#        xaxis = 'sal' #self.xaxis
+#        reforme = False
+#        dataDefault = None
+#        legend = True
+#        fig=Figure()
+#        ax=fig.add_subplot(111)
+#        drawBareme(data, ax, xaxis, reforme = reforme,
+#                    dataDefault = dataDefault, legend = legend)
+#        canvas = FigureCanvas(fig)
+#        self.canvas = canvas
+##        response= HttpResponse(content_type='image/png')
+##        canvas.print_png(response)
+##        return response
 
 
 
