@@ -242,9 +242,35 @@ def build_simu(scenario):
 #    for indinv in formset['noiindiv']
 
 from chartit import DataPool, Chart
+from simulation.models import MonthlyWeatherByCityForm
+
+try: 
+    import simplejson 
+except ImportError: 
+    try: 
+        import json as simplejson 
+    except ImportError: 
+        from django.utils import simplejson
+
 
 def graphtest3(request):
     #Step 1: Create a DataPool with the data we want to retrieve.
+ 
+    for i in range(1,13):   
+        data = {'month': i,
+                'houston_temp' : i+3.1,
+                'boston_temp' : 2*i+ 3.1}
+    
+        form = MonthlyWeatherByCityForm(data=data)
+        print form.is_valid()
+        if not form.is_valid():
+            for field in form.fields:
+                print form.errors[field]
+        form.save()
+     
+    print MonthlyWeatherByCity.objects.all()
+    
+    
     weatherdata = DataPool(
            series=
             [{'options': {

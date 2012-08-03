@@ -221,9 +221,13 @@ class Declar5Form(Form):
             self.fields[field] = MyBooleanField()
 
 from django.utils import simplejson
-import json
 
 class MonthlyWeatherByCity(models.Model):
     month = models.IntegerField()
     boston_temp = models.DecimalField(max_digits=5, decimal_places=1)
     houston_temp = models.DecimalField(max_digits=5, decimal_places=1)
+
+from django.forms import ModelForm
+class MonthlyWeatherByCityForm(ModelForm):
+    class Meta:
+        model = MonthlyWeatherByCity

@@ -1,0 +1,30 @@
+ <!DOCTYPE HTML>
+ <html lang="en-US">
+ <head>
+  <script type = "text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js" ></script>
+  <script type = "text/javascript" src = "http://code.highcharts.com/highcharts.js"></script>
+  <script type = "text/javascript" src = "http://code.highcharts.com/highcharts.src.js"></script>
+  <script type = "text/javascript" src = "http://code.highcharts.com/modules/exporting.js"></script>
+  <script type = "text/javascript" src = "http://code.highcharts.com/modules/exporting.src.js"></script>	
+  <script type = "text/javascript" src = "http://code.highcharts.com/adapters/mootools-adapter.js"></script>
+  <script type = "text/javascript" src = "http://code.highcharts.com/adapters/mootools-adapter.src.js"></script>
+  <script type = "text/javascript" src = "http://code.highcharts.com/adapters/prototype-adapter.js"></script>
+  <script type = "text/javascript" src = "http://code.highcharts.com/adapters/prototype-adapter.src.js"></script>
+
+</head>
+
+
+
+
+{% block content %}
+
+<body>
+
+
+{% load chartit %} 
+{{ weatherchart|load_charts:"container" }}
+
+
+<div id ="container">chart will be rendered here</div>
+</body>
+{% endblock %}
