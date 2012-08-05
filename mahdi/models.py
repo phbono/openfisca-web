@@ -1,16 +1,16 @@
 # -*-coding:Utf-8 -*
 
-#from django.db import models
+from django.db import models
+
 import datetime
 
+from django.forms import ModelForm
 from django.forms import Form, IntegerField, DateField, ChoiceField, BooleanField, TextInput  
-
 from django import template
-
 from django.forms.extras.widgets import SelectDateWidget
-
 from django.forms.fields import CheckboxInput
-
+from django.forms.formsets import  BaseFormSet
+ 
 
 #pacs   = [ ('pac' + str(i), 'Personne à charge')  for i in range(1,10)]
 pacs = [('pac', 'Personne à charge')]
@@ -33,6 +33,29 @@ register = template.Library()
 @register.filter(name='is_checkbox')
 def is_checkbox(value):
     return isinstance(value, CheckboxInput)
+
+
+from core.utils import Scenario
+class BaseScenarioFormSet(BaseFormSet):    
+    def get_scenario(self):
+        scenario = Scenario()
+        for form in self.cleaned_data:
+            noi, birth = form['noi']-1, form['birth']
+            idfoy, quifoy, idfam, quifam = form['idfoy']-1, form['quifoy'], form['idfam']-1, form['quifam']
+            scenario.indiv.update({noi:{'birth':birth, 
+                                'inv'     : 0,
+                                'alt'     : 0,
+                                'activite': 0,
+                                'quifoy'  : quifoy,
+                                'quifam'  : quifam,
+                                'noidec'  : idfoy,
+                                'noichef' : idfam,
+                                'noipref' : 0,
+                                'statmarit': 2}})
+            
+            scenario._assignPerson(noi, quifoy = quifoy, foyer = idfoy, quifam = quifam, famille = idfam)
+            scenario.updateMen()
+        return scenario
 
 
 class MyBooleanField(BooleanField):
@@ -85,10 +108,8 @@ class IndividualForm(Form):
 class LogementForm(Form):
     so = ChoiceField(label = "Statut d'occupation",choices = SO)
     loyer = IntegerField(label = 'Loyer', initial = 500,min_value=0, max_value=100000)
-    code_postal = IntegerField(label = 'Code postal', initial = 69001)
-    zone_apl = IntegerField(label = 'Zone allocation logement', initial = 2)
-
-
+    code_postal = IntegerField(label = 'Code postal', initial = 00000)
+#    zone_apl = IntegerField(label = 'Zone allocation logement', initial = 0)
 
 
 
@@ -206,9 +227,30 @@ class Declar5Form(Form):
            
         for field in bool_fields:
             self.fields[field] = MyBooleanField()
+
+
+
+
+class Barem(models.Model):
+    val      = models.FloatField()
+    code     = models.CharField(max_length=99)
+    desc     = models.CharField(max_length=99)
+    x        = models.IntegerField()
+    class Meta:
+        ordering = ('x',)
+    
+    
+class BaremForm(ModelForm):
+    class Meta:
+        model = Barem
         
+class Node(models.Model):
+    val      = models.FloatField()
+    code     = models.CharField(max_length=99)
+    low      = models.FloatField()
+    desc     = models.CharField(max_length=99)
+
+class NodeForm(ModelForm):
+    class Meta:
+        model = Node
         
-
-
-
-

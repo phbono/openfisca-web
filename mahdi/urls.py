@@ -10,5 +10,5 @@ urlpatterns = patterns('',
     url(r'^declar04/(?P<idfoy>\d{1})/$', 'mahdi.views.declar04'),
     url(r'^declar05/(?P<idfoy>\d{1})/$', 'mahdi.views.declar05'), # TODO clean this decla0i0
     url(r'^output/$', 'mahdi.views.output', name='output'),
-    url(r'^graph.png$', 'mahdi.views.graph', name='graph'),
+    url(r'^graph/$', 'mahdi.views.graph', name='graph'),
     )  

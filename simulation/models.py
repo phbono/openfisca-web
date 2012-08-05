@@ -11,6 +11,7 @@ from django import template
 from django.forms.extras.widgets import SelectDateWidget
 
 from django.forms.fields import CheckboxInput
+from mahdi.interfaces import Compo
 
 
 
@@ -77,7 +78,6 @@ class MyDateField(DateField):
         DateField.__init__(self, widget= wid, **fieldAttr)
 
 
-from mahdi.lanceur import Compo
 
 class Declar1Form(Form):
     statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))   
@@ -220,7 +220,6 @@ class Declar5Form(Form):
         for field in bool_fields:
             self.fields[field] = MyBooleanField()
 
-from django.utils import simplejson
 
 class MonthlyWeatherByCity(models.Model):
     month = models.IntegerField()

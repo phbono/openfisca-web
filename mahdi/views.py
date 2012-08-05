@@ -1,16 +1,19 @@
 # -*-coding:Utf-8 -*
 
 from django.core.context_processors import csrf
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response
 from mahdi.models import (IndividualForm,
                           LogementForm,
                           Declar1Form, Declar2Form, Declar3Form, Declar4Form, Declar5Form)
 
 from django.forms.formsets import formset_factory
-from mahdi.lanceur import Simu, Compo, BaseScenarioFormSet
+
+from mahdi.interfaces import Simu, Compo, BaseScenarioFormSet
+
 from france.data import InputTable
 from core.datatable import DataTable
+from core.utils import Scenario
 
 
 def menage(request):
@@ -49,8 +52,8 @@ def menage(request):
                 
                 if 'submit' in request.POST:
                     compo.scenario.genNbEnf()
-
-                    simu = build_simu(compo.scenario)                    
+                    simu = Simu(compo.scenario)
+                    simu.build()                    
 #                    for child in simu.data_courant.children:
 #                        for child2 in child.children:
 #                            print child2.code
@@ -78,75 +81,41 @@ def output(request):
     return render_to_response('mahdi/output.html')    
 
 
-from matplotlib.figure import Figure
-from widgets.Output import drawBareme, drawWaterfall
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
-def graph_old(request):
-    data = request.session['data']
-#    for child in data.children:
-#        for child2 in child.children:
-#            print child2.code
-#            print child2._vals
-
-    
-    xaxis = 'sal' #self.xaxis
-    reforme = False
-    dataDefault = None
-    legend = False
-    fig = Figure()
-    ax = fig.add_subplot(111)
-    drawWaterfall(data, ax)
-#    drawBareme(data, ax, xaxis, reforme = reforme,
-#               dataDefault = dataDefault, legend = legend)
-#    drawBareme(ax, data)
-#    print 'apres drawbareme'
-#    print fig
-
-    canvas = FigureCanvas(fig)    
-    response= HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
-
-
-
-from chartit import DataPool, Chart
-def graph(request):
-    data = request.session['data']
-        
-    
-
-    weatherdata = DataPool(
-           series=
-            [{'options': {
-                'source': MonthlyWeatherByCity.objects.all()},
-              'terms': [
-                'month',
-                'houston_temp', 
-                'boston_temp']}
-             ])
-
-    #Step 2: Create the Chart object
-    cht = Chart(
-            datasource = openfisca_data,
-            series_options =
-              [{'options':{
-                  'type': 'line',
-                  'stacking': False},
-                'terms':{
-                  'month': [
-                    'boston_temp',
-                    'houston_temp']
-                  }}],
-            chart_options =
-              {'title': {
-                   'text': 'Openfisca'},
-               'xAxis': {
-                    'title': {
-                       'text': 'Month number'}}})
+#from matplotlib.figure import Figure
+#from widgets.Output import drawBareme, drawWaterfall
+#from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+#
+#def graph_old(request):
+#    data = request.session['data']
+##    for child in data.children:
+##        for child2 in child.children:
+##            print child2.code
+##            print child2._vals
+#
+#    
+#    xaxis = 'sal' #self.xaxis
+#    reforme = False
+#    dataDefault = None
+#    legend = False
+#    fig = Figure()
+#    ax = fig.add_subplot(111)
+#    drawWaterfall(data, ax)
+##    drawBareme(data, ax, xaxis, reforme = reforme,
+##               dataDefault = dataDefault, legend = legend)
+##    drawBareme(ax, data)
+##    print 'apres drawbareme'
+##    print fig
+#
+#    canvas = FigureCanvas(fig)    
+#    response= HttpResponse(content_type='image/png')
+#    canvas.print_png(response)
+#    return response
+#
 
 
-from lanceur import get_zone
+
+
+from mahdi.utils import get_zone
 
 def logement(request):
 
@@ -154,25 +123,19 @@ def logement(request):
     print request.method
     compo = request.session.get('compo', default=None)
     commune = 'Indéterminée'
-    zone_apl = None
+    zone_apl = 0
     
     if request.method == 'POST':
         logt_form = LogementForm(request.POST)
         if logt_form.is_valid():
             vals = logt_form.cleaned_data
             print request.POST    
-            if 'submit' in request.POST:
-                print 'logement submit'
-                code_postal = vals['code_postal']
-                commune, zone_apl = get_zone(code_postal)
-                compo.set_logement(vals)
-                
-                print compo.scenario
-            elif 'reset' in request.POST:
-                print 'reset'
-            elif 'validate' in request.POST:
-                print 'logement validate' 
-                
+            if 'validate' in request.POST:
+                # compute the apl zone
+                commune, zone_apl = compo.set_logement(vals)
+                request.session['compo'] = compo
+            elif 'submit' in request.POST:
+                request.session['compo'] = compo    
     else:
         logt_form = LogementForm()
     c = {'logt_form': logt_form, 'commune' : commune, 'zone_apl' :zone_apl}
@@ -313,62 +276,224 @@ def declar05(request, idfoy = None):
     return render(request, 'mahdi/declar05.html', c)   
 
 
+from chartit import DataPool, Chart
+from mahdi.models import Node, NodeForm
+from django.db.models import Sum
 
 
-#import numpy as np
-#import pylab
-#from matplotlib.patches import PathPatch
-#
-#def drawBareme(ax1, data):
-#    n = len(data)
-#    MAXREV = 50000
-#    NMEN = 101
-#    XAXIS = 'sal'
-#    MODE = 'bareme'
-#    xdata = np.linspace(0, MAXREV, NMEN)
-#
-#    ax1.hold(True)
-#
-#    # On trace le revenu disponible
-#    ax1.plot(xdata, data.revdisp.vals, color = data.revdisp.color, linewidth = 3, zorder = 51)
-#    p = [pylab.Line2D([0,1],[.5,.5],color = data.revdisp.color)]
-#    l = [data.revdisp.desc]
-#
-#    prv = np.zeros(NMEN)
-#    for serie in data.getNonNuls():
-#        cur = serie.cumu
-#        col = serie.color
-#        dsc = serie.desc
-#        cod = serie.code
-#
-#        if cod != 'irpp':
-#            a = ax1.fill_between(xdata, prv , cur, color = col, linewidth = 0.5, edgecolor = 'black', picker = True )
-#            a.set_label(dsc)
-#            p.insert(0,pylab.Rectangle((0, 0), 1, 1, fc = col, linewidth = 0.5, edgecolor = 'black' ))
-#            l.insert(0,dsc)
-#        elif cod == 'irpp':
-#            imp = ax1.fill_between(xdata, cur, prv, linewidth = 2, edgecolor = 'blue', zorder = 50, picker = True )
-#            imp.set_label(dsc)                
-#            imp.set_facecolors("none")
-#
-#            for path in imp.get_paths():
-#                patch = PathPatch(path, fc="none", hatch="\\")
-#                ax1.add_patch(patch)
-#                patch.set_zorder(49)
-#
-#            p.insert(0,pylab.Rectangle((0, 0), 1, 1, fc=(1,1,1,0), edgecolor = 'blue', hatch = '\\'))
-#            l.insert(0,dsc)
-#        prv = cur
-#    
-#            
-#    if   XAXIS == 'sal': xlabel = u'Salaires de la personne de référence'
-#    elif XAXIS == 'cho': xlabel = u'Allocation chômage de la personne de référence'
-#    elif XAXIS == 'rst': xlabel = u'Pensions de retraite de la personne de référence'
-#    ax1.set_xlabel(xlabel)
-#    ax1.set_ylabel(u"Revenu disponible")
-#    ax1.set_xlim(0, np.amax(xdata))
-#    if   MODE == 'bareme' : ax1.set_ylim(0, np.amax(xdata))
-#    elif MODE == 'reforme': ax1.set_ylim(auto = True)
-#
-#    ax1.legend(p,l,loc= 4, prop = {'size':'medium'})
+def graph(request):
+    
+    ## TODO use low as in http://stackoverflow.com/questions/7969300/highcharts-column-chart
+    ## http://fiddle.jshell.net/delfino4747/M8npu/10/
+    #data = request.session['data']
+    
+    scenario = Scenario()
+    simu = Simu(scenario=scenario, nmen=1)
+    simu.build()
+    data = simu.data_courant
+    codes  = []    
+    
+    data.setLeavesVisible()
+    
+    Node.objects.all().delete()
+    
+    
+
+    def create_waterfall_NodeForm(node, prv):
+        '''
+        Creates waterfall node Forms    
+        '''
+        if node.code == 'nivvie':
+            return
+        prev = prv + 0
+        val = node.vals[0]
+        bot = prev
+        for child in node.children:
+            create_waterfall_NodeForm(child, prev)
+            prev += child.vals[0]
+        if (val != 0)  and (node.visible) and (node.code != 'root'):
+            # r,g,b = node.color
+            print node.code
+            form = NodeForm(data = {'code': node.code, 'val': val, 'desc': node.desc, 'low': bot })
+            form.save()
+            codes.append(node.code)
+        
+    prv = 0
+    create_waterfall_NodeForm(data, prv)
+    print codes
+    
+    openfisca_data = DataPool(
+       series=
+        [{'options': {
+            'source': Node.objects.all()},
+            'terms': [  'low', 'val', 'code','desc' ]}
+         ])
+    
+    #Step 2: Create the Chart object
+
+
+    cht = Chart(
+        datasource = openfisca_data,
+        series_options = 
+            [{'options':{
+                         'type': 'column',
+                          'allowPointSelect': 'true'                         
+                         },
+              'terms': { 'code' : ['low' , 'val'] }
+#                                   {}} , 
+#                                {'start': {'showInLegend': False,
+#                                           'color' : 'transparent',
+#                                           'shadow' : False,
+#                                           'borderColor' : 'transparent',
+#                                           'borderWidth' : 0,
+#                                           #'visible' : False,
+#                                           }}
+                       }],
+        chart_options =
+          {'title' : {
+               'text': 'Openfisca'},
+           }
+            )
+    
+    #Step 3: Send the chart object to the template.
+    return render_to_response('mahdi/chartit_graph.html', {'chart': cht})
+
+from mahdi.models import Barem, BaremForm
+
+
+from chartit import PivotDataPool, PivotChart
+def graphBR(request):
+    #data = request.session['data']
+    
+    scenario = Scenario()
+    nmen = 11
+    simu = Simu(scenario=scenario, nmen = nmen)
+    simu.build()
+    data = simu.data_courant
+
+    
+    if True:
+#    if self.mode == 'bareme':
+        data['salsuperbrut'].setHidden()
+        data['salbrut'].setHidden()
+        data['chobrut'].setHidden()
+        data['rstbrut'].setHidden()
+
+
+
+    codes  = []
+    data.setLeavesVisible()
+    
+    
+    def set_visible_level(node, level):
+        if level == 0:
+            node.visible = True
+        else: 
+            node.visible = False
+        for child in node.children:
+            set_visible_level(child, level-1)
+    
+    set_visible_level(data,5)
+    
+    
+    Barem.objects.all().delete()
+    def create_BaremForm(node):
+        '''
+        Creates waterfall node Forms    
+        '''
+
+        for child in node.children:
+            create_BaremForm(child)
+        index = 0
+        if (node.code != 'root') and node.visible:
+            for val in node.vals:
+                index += 1
+                # r,g,b = node.color
+                form = BaremForm(data = {'code': node.code, 'val': val, 'desc': node.desc, 'x': index })
+                form.save()            
+            codes.append(node.code)
+        
+
+    create_BaremForm(data)
+    print codes
+
+        
+#    openfisca_data = DataPool(
+#       series=
+#        [{'options': {
+#            'source': Barem.objects.all(),
+#            'categories': ['x']},
+#          'terms': [
+#            'val',
+#            'code',
+#            'desc','x']}
+#         ])
+    
+
+
+
+#    cht = Chart(
+#        datasource = openfisca_data,
+#        series_options = 
+#            [{'options':{
+#                         'type': 'area',
+#                         'stacking': 'normal',
+#                         },
+#                         
+#              'terms':{
+#                       'x': [ {'val': {},
+#                               }
+#                                ]
+#                       }}],
+#        chart_options =
+#          {'title' : {
+#               'text': 'Openfisca'},
+#           'xAxis' : {'categories': codes}
+#           }
+#            )
+    
+    def sortx(x):
+        y = x[0][0]
+        print y
+        return int(round(float(y)*1e6))
+    
+
+    openfisca_data = PivotDataPool(
+       series=
+        [{'options': {
+            'source': Barem.objects.all(),
+            'categories': ['x'],
+            'legend_by': 'code'},
+          'terms': { 'val': Sum('val')}, 
+            }
+         ],
+        sortf_mapf_mts = (sortx , lambda x: x,True))
+    #Step 2: Create the Chart object
+
+    print openfisca_data.series
+
+    cht = PivotChart(
+        datasource = openfisca_data,
+        series_options = 
+            [{'options':{
+                         'type': 'area',
+                         'stacking': 'normal',
+                         },
+                         
+              'terms':[{'val': {}},
+                        ]
+                       }],
+        chart_options =
+          {'title' : {
+               'text': 'Openfisca'},
+           'xAxis' : {'categories': codes}
+           }
+            )
+
+
+
+    
+    #Step 3: Send the chart object to the template.
+    return render_to_response('mahdi/chartit_graph.html', {'chart': cht})
+
 

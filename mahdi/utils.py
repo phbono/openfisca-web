@@ -75,7 +75,7 @@ def get_zone(postal_code):
     Takes the postal_code as input argument
     Returns a list with the name of the commune and the apl zone  
     '''
-    # TODO: REMOVE THIS PART
+    # TODO: REMOVE THIS PART AND ADD TO MAINSTREAM OPENFISCA
     cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
     predirectory = os.path.dirname(cmd_folder)
     directory = os.path.join(predirectory,'srcopen')
@@ -93,3 +93,80 @@ def get_zone(postal_code):
     return commune    
 
 
+# TODO: REMOVE THIS PART AND ADD TO MAINSTREAM OPENFISCA AS SUPPLEMENTARY METHOD TO OutNode
+
+from core.utils import OutNode
+from numpy import count_nonzero
+
+class MyNode(OutNode):
+    def __init__(self, code = '', desc='', shortname = '', vals = 0, color = (0,0,0), typevar = 0, parent = None, is_null = None):
+        super(MyNode, self).__init__(code, desc, shortname = '', vals = 0, color = (0,0,0), typevar = 0, parent = None)
+        self.is_null = is_null
+        
+    def init_from_OutNode(self, OutNode):
+        '''
+        Creates a MyNOde from an OutNode
+        '''
+        for attr in ['code', 'desc', 'shortname', 'vals', 'color', 'typevar']:
+            setattr(self, attr, getattr(OutNode, attr))
+        
+        if OutNode.childCount != 0:
+            for child in  OutNode.children:
+                new_child = MyNode()
+                new_child.init_from_OutNode(child)
+                self.addChild(new_child)        
+        
+    
+    def signal_null_children(self):
+        '''
+        Sets the is_null attributes to True or False
+        '''
+        if self.is_null is not None:
+            return
+        else:
+            self.is_null = True
+        
+        if self.childCount() == 0:
+            if count_nonzero(self.vals) > 0:
+                self.is_null = False
+                return
+        
+        else:
+            for child in self.children:                
+                if child.is_null is not None:
+                    if child.is_null is False:
+                        self.is_null = False
+                else:
+                    child.signal_null_children()
+                    if child.is_null is False:
+                        self.is_null = False
+
+    def remove_null_children(self):
+        '''
+        Remove all is_null attributes from MyNode
+        '''
+        self.signal_null_children()
+        children = self.children[:]
+        for child in children:
+            if child.is_null:
+                self.children.remove(child)
+            else:
+                child.remove_null_children()
+                    
+        if self.is_null:
+            self.parent.children.remove(self)
+
+    def create_fields_dict(self):
+        self.remove_null_children()
+        fields = dict()
+        
+        if self.childCount() == 0:
+            fields[self.code] = self.vals[0]
+            return fields  
+        
+        elif self.childCount() > 0:
+            for child in self.children:
+                new_fields = child.create_fields_dict()
+                fields.update(new_fields)
+            return fields
+        
