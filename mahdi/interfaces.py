@@ -24,7 +24,7 @@ This file is part of openFisca.
 import os, inspect
 from datetime import date
 
-from django.forms.formsets import formset_factory, BaseFormSet
+from django.forms.formsets import formset_factory
 
 from core.utils import gen_output_data
 from core.utils import Scenario
@@ -35,43 +35,19 @@ from france.data import InputTable
 from france.model import ModelFrance
 from core.datatable import DataTable, SystemSf
 
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-from mahdi.models import IndividualForm, Declar1Form, Declar3Form 
-from mahdi.utils import extract_foy_indiv, foy2of_dict, field2quifoy
+from mahdi.models import IndividualForm, Declar1Form, Declar3Form, BaseScenarioFormSet
+from mahdi.utils import extract_foy_indiv, foy2of_dict, field2quifoy, get_zone
 
-
-class BaseScenarioFormSet(BaseFormSet):    
-    def get_scenario(self):
-        scenario = Scenario()
-        for form in self.cleaned_data:
-            noi, birth = form['noi']-1, form['birth']
-            idfoy, quifoy, idfam, quifam = form['idfoy']-1, form['quifoy'], form['idfam']-1, form['quifam']
-            scenario.indiv.update({noi:{'birth':birth, 
-                                'inv'     : 0,
-                                'alt'     : 0,
-                                'activite': 0,
-                                'quifoy'  : quifoy,
-                                'quifam'  : quifam,
-                                'noidec'  : idfoy,
-                                'noichef' : idfam,
-                                'noipref' : 0,
-                                'statmarit': 2}})
-            
-            scenario._assignPerson(noi, quifoy = quifoy, foyer = idfoy, quifam = quifam, famille = idfam)
-            scenario.updateMen()
-        return scenario
 
 
 class Simu(object):
-    def __init__(self, scenario=None, root_dir=None):
+    def __init__(self, scenario = None, root_dir = None, nmen = None):
         super(Simu, self).__init__()
 
-        self.set_config(directory=root_dir)        
+        self.set_config(directory = root_dir, nmen = nmen)        
         self.set_scenario(scenario)
         #self.scenario.genNbEnf()
-        
         
     def build(self):
         self.set_date()
@@ -80,29 +56,21 @@ class Simu(object):
             print 'inconsistent scenario'
         self.set_param()
         self.compute()
-#    simu.build_graph()
-#    
-#    
-#    for child in x.children:
-#            for child2 in child.children:
-#                print child2.code
-#                print child2._vals
-
-
         
-        
-    def set_config(self, directory = None, nmen=1):
+    def set_config(self, directory = None, nmen = None):
         '''
         Sets the directory where to find the openfisca source and adjust some directories
         '''
-        if directory == None:
-#   TODO REMOVE         dir = "C:/Users/Utilisateur/My Documents/Aptana Studio 3 Workspace/web/srcopen"
-#            dir = "/home/florent/workspace/openfisca/srcopen/"
+        if directory is None:
             cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
             predirectory = os.path.dirname(cmd_folder)
             directory = os.path.join(predirectory,'srcopen')
 
         CONF.set('paths', 'data_dir', os.path.join(directory,'data'))
+
+        if nmen is None:
+            nmen = 1
+        
         CONF.set('simulation', 'nmen', nmen)
 
          
@@ -144,7 +112,6 @@ class Simu(object):
         population_courant.set_inputs(input_table)
         self.data_courant = gen_output_data(population_courant)
 
-
     def set_xaxis(self):
         temp = {u'Salaire super brut': 'salsuperbrut',
         u'Salaire brut' : 'salbrut',
@@ -164,6 +131,21 @@ class Simu(object):
         Sets graph mode (bareme/waterfall)
         '''
         self.mode = mode 
+
+    def waterfall_chart(self):
+        '''
+        Creates using chartit
+        '''
+        pass
+
+    def bareme_chart(self):
+        '''
+        Creates using chartit
+        '''
+        pass
+
+#from matplotlib.figure import Figure
+#from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 #    def build_graph(self):
 #        '''
@@ -251,9 +233,16 @@ class Compo(object):
         data = dict(statmarit=2)
         for indiv in self.scenario.indiv.itervalues():
             if indiv['noidec'] == idfoy:            
-                data[indiv['quifoy']] = indiv['birth']
+                if indiv['quifoy'][:3] == 'pac':
+                    data['pac'] = indiv['birth']
+                else:
+                    data[indiv['quifoy']] = indiv['birth']
+                
                 if indiv['quifoy'] == 'vous':
                     data['statmarit'] = int(1)
+                
+        
+        
         
         form = Declar1Form(data)
 
@@ -315,31 +304,38 @@ class Compo(object):
         return form
     
 
+
     def set_logement(self, values):
         '''
         Sets logement values in scenario
         '''
+        code_postal = values['code_postal']
+        commune, zone_apl = get_zone(code_postal)
         loyer = values['loyer']
         so = values['so']
-        zone_apl = values['zone_apl']
-        code_postal = values['code_postal']
         self.scenario.menage[0].update({'loyer': int(loyer),
                                         'so': int(so),
                                         'zone_apl': int(zone_apl),
                                         'code_postal': int(code_postal)})
 
-    def get_declar1(self, data = None, idfoy = 0):
+        return commune, code_postal
+
+    def get_declar1(self, data = None, idfoy = None):
         '''
         Sets declar1 values in compo.scenario  from a Delcar1Form
         '''
+        if idfoy is None:
+            idfoy = 0
 
         statmarit = data['statmarit']
-        
+        print self.scenario.indiv
         for indiv in self.scenario.indiv.itervalues(): 
             if indiv['noidec'] == idfoy:
                 if indiv['quifoy'] in ['vous', 'conj']:
                     indiv['statmarit'] = statmarit
-                indiv['birth'] = data[indiv['quifoy']]
+#                    indiv['birth'] = data[indiv['quifoy']]
+#                else:
+#                    indiv['birth'] = 
 
     def get_declar(self, form = None, idfoy = 0):
         '''
@@ -377,30 +373,6 @@ class Compo(object):
                 declar[field] = value
 
 
-# TODO move this to main openfisca branch
-import pickle
-
-def get_zone(postal_code):
-    '''
-    Takes the postal_code as input argument
-    Returns a list with the name of the commune and the apl zone  
-    '''
-    # TODO: REMOVE THIS PART
-    cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
-    predirectory = os.path.dirname(cmd_folder)
-    directory = os.path.join(predirectory,'srcopen')
-    
-    code = postal_code
-    code_file = open(os.path.join(directory,'data/code_apl'), 'r')
-    code_dict = pickle.load(code_file)
-    code_file.close()
-
-    if str(code) in code_dict:
-        commune = code_dict[str(code)]
-    else:
-        commune = ("Ce code postal n'est pas reconnu", '2')
-        
-    return commune[0], commune[1]    
 
 
 def main():
