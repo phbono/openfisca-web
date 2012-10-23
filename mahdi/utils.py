@@ -22,7 +22,7 @@ This file is part of openFisca.
 """
 
 import os, inspect
-from core.utils import Scenario
+from france.utils import Scenario
 
 
 def extract_foy_indiv(scenario = None, idfoy = None):
@@ -68,32 +68,7 @@ def field2quifoy(field):
     return letter2quifoy[field[2]]
     
         
-import pickle
 
-def get_zone(postal_code):
-    '''
-    Takes the postal_code as input argument
-    Returns a list with the name of the commune and the apl zone  
-    '''
-    # TODO: REMOVE THIS PART AND ADD TO MAINSTREAM OPENFISCA
-    cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
-    predirectory = os.path.dirname(cmd_folder)
-    directory = os.path.join(predirectory,'srcopen')
-    
-    code = postal_code
-    code_file = open(os.path.join(directory,'data/code_apl'), 'r')
-    code_dict = pickle.load(code_file)
-    code_file.close()
-
-    if str(code) in code_dict:
-        commune = code_dict[str(code)]
-    else:
-        commune = ("Ce code postal n'est pas reconnu", '2')
-        
-    return commune    
-
-
-# TODO: REMOVE THIS PART AND ADD TO MAINSTREAM OPENFISCA AS SUPPLEMENTARY METHOD TO OutNode
 
 from core.utils import OutNode
 from numpy import count_nonzero

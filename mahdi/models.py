@@ -35,7 +35,8 @@ def is_checkbox(value):
     return isinstance(value, CheckboxInput)
 
 
-from core.utils import Scenario
+from france.utils import Scenario
+
 class BaseScenarioFormSet(BaseFormSet):    
     def get_scenario(self):
         scenario = Scenario()

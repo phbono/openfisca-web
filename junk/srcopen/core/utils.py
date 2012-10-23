@@ -90,7 +90,7 @@ def handle_output_xml(doc, tree, model, unit = 'men'):
         tree.setVals(val)
 
             
-def gen_output_data(model):
+def gen_output_data(model, filename = None):
     data_dir = CONF.get('paths', 'data_dir')
     totals_fname = os.path.join(data_dir,'totaux.xml')
     _doc = minidom.parse(totals_fname)

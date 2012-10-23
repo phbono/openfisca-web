@@ -25,19 +25,19 @@ import os, inspect
 from datetime import date
 
 from django.forms.formsets import formset_factory
+from mahdi.models import IndividualForm, Declar1Form, Declar3Form, BaseScenarioFormSet
+from mahdi.utils import extract_foy_indiv, foy2of_dict, field2quifoy
 
+
+# imports from openfisca
+from core.datatable import DataTable, SystemSf
 from core.utils import gen_output_data
-from core.utils import Scenario
 
 from parametres.paramData import XmlReader, Tree2Object
 from Config import CONF
+from france.utils import Scenario
 from france.data import InputTable
-from france.model import ModelFrance
-from core.datatable import DataTable, SystemSf
-
-
-from mahdi.models import IndividualForm, Declar1Form, Declar3Form, BaseScenarioFormSet
-from mahdi.utils import extract_foy_indiv, foy2of_dict, field2quifoy, get_zone
+from france.model import ModelSF
 
 
 
@@ -61,12 +61,13 @@ class Simu(object):
         '''
         Sets the directory where to find the openfisca source and adjust some directories
         '''
-        if directory is None:
-            cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
-            predirectory = os.path.dirname(cmd_folder)
-            directory = os.path.join(predirectory,'srcopen')
-
-        CONF.set('paths', 'data_dir', os.path.join(directory,'data'))
+#        if directory is None:
+#            cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
+#            predirectory = os.path.dirname(cmd_folder)
+#            directory = os.path.join(predirectory,'../../srcopen')
+#        
+#        
+#        CONF.set('paths', 'data_dir', os.path.join(directory,'data'))
 
         if nmen is None:
             nmen = 1
@@ -92,8 +93,12 @@ class Simu(object):
         '''
         Sets the parameters of the simulation
         '''
-        data_dir = CONF.get('paths', 'data_dir')
-        fname = os.path.join(data_dir, 'param.xml')
+        # TODO: cradissime
+        SITE_PATH = os.path.abspath(os.path.dirname(__file__))
+        PROJECT_PATH = os.path.normpath(os.path.join(SITE_PATH, '..', '..'))
+        SRC_PATH = os.path.join(PROJECT_PATH, 'openfisca','src')
+        fname =  os.path.join(SRC_PATH, 'france','param','param.xml')
+
         reader = XmlReader(fname, self._date)
         rootNode = reader.tree
         
@@ -108,9 +113,16 @@ class Simu(object):
         Computes the totals  
         '''
         input_table = DataTable(InputTable, scenario = self.scenario)
-        population_courant = SystemSf(ModelFrance, self.param_courant, self.param_default)
+        population_courant = SystemSf(ModelSF, self.param_courant, self.param_default)
         population_courant.set_inputs(input_table)
-        self.data_courant = gen_output_data(population_courant)
+
+        # TODO: cradissime
+        SITE_PATH = os.path.abspath(os.path.dirname(__file__))
+        PROJECT_PATH = os.path.normpath(os.path.join(SITE_PATH, '..', '..'))
+        SRC_PATH = os.path.join(PROJECT_PATH, 'openfisca','src')
+        fname =  os.path.join(SRC_PATH, 'france','totaux.xml')        
+        
+        self.data_courant = gen_output_data(population_courant, fname)
 
     def set_xaxis(self):
         temp = {u'Salaire super brut': 'salsuperbrut',
@@ -217,8 +229,6 @@ class Compo(object):
                 
 
         formset = ScenarioFormSet(data=data)
-        
-
         return formset
 
 
@@ -309,8 +319,16 @@ class Compo(object):
         '''
         Sets logement values in scenario
         '''
+        from france.widgets.Composition import get_zone
+
+        # TODO: cradissime
+        SITE_PATH = os.path.abspath(os.path.dirname(__file__))
+        PROJECT_PATH = os.path.normpath(os.path.join(SITE_PATH, '..', '..'))
+        SRC_PATH = os.path.join(PROJECT_PATH, 'openfisca','src')
+        zone_apl_filename =  os.path.join(SRC_PATH, 'france','data','code_apl')
+        
         code_postal = values['code_postal']
-        commune, zone_apl = get_zone(code_postal)
+        commune, zone_apl = get_zone(code_postal, filename = zone_apl_filename)
         loyer = values['loyer']
         so = values['so']
         self.scenario.menage[0].update({'loyer': int(loyer),
@@ -382,8 +400,8 @@ def main():
     if msg:
         print 'inconsistent scenario'
     simu.set_param()
-    x = simu.compute()
-    for child in x.children:
+    simu.compute()
+    for child in simu.data_courant:
             for child2 in child.children:
                 print child2.code
                 print child2._vals

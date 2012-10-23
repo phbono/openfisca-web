@@ -13,7 +13,7 @@ from mahdi.interfaces import Simu, Compo, BaseScenarioFormSet
 
 from france.data import InputTable
 from core.datatable import DataTable
-from core.utils import Scenario
+from france.utils import Scenario
 
 
 def menage(request):
@@ -115,14 +115,13 @@ def output(request):
 
 
 
-from mahdi.utils import get_zone
 
 def logement(request):
 
     print 'entering logement'
     print request.method
     compo = request.session.get('compo', default=None)
-    commune = 'Indéterminée'
+    commune = u'Indéterminée'
     zone_apl = 0
     
     if request.method == 'POST':
@@ -130,9 +129,13 @@ def logement(request):
         if logt_form.is_valid():
             vals = logt_form.cleaned_data
             print request.POST    
-            if 'validate' in request.POST:
+            if u'validate' in request.POST:
                 # compute the apl zone
+                print 'validate'
+                print vals
                 commune, zone_apl = compo.set_logement(vals)
+                print commune
+                print zone_apl
                 request.session['compo'] = compo
             elif 'submit' in request.POST:
                 request.session['compo'] = compo    
@@ -294,7 +297,6 @@ def graph(request):
     codes  = []    
     
     data.setLeavesVisible()
-    
     Node.objects.all().delete()
     
     
@@ -354,7 +356,7 @@ def graph(request):
                'text': 'Openfisca'},
            }
             )
-    
+    print cht
     #Step 3: Send the chart object to the template.
     return render_to_response('mahdi/chartit_graph.html', {'chart': cht})
 

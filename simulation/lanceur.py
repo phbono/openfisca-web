@@ -27,12 +27,12 @@ from datetime import date
 from django.forms.formsets import formset_factory, BaseFormSet
 
 from core.utils import gen_output_data
-from core.utils import Scenario
+from france.utils import Scenario
 from widgets.Output import drawBareme
 from parametres.paramData import XmlReader, Tree2Object
 from Config import CONF
 from france.data import InputTable
-from france.model import ModelFrance
+from france.model import ModelSF
 from core.datatable import DataTable, SystemSf
 
 from matplotlib.figure import Figure
@@ -116,7 +116,7 @@ class Simu(object):
         Computes the totals  
         '''
         input_table = DataTable(InputTable, scenario = self.scenario)
-        population_courant = SystemSf(ModelFrance, self.param_courant, self.param_default)
+        population_courant = SystemSf(ModelSF, self.param_courant, self.param_default)
         population_courant.set_inputs(input_table)
         self.data_courant = gen_output_data(population_courant)
 
