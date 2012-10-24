@@ -1,0 +1,18 @@
+Manipulations dans eclipse :
+
+Faire File → new → project →pydev →pydev django project
+Le nommer openfisca-web (le nom du dossier dans lequel vous avez fait clone, si vous avez changé son nom)
+Dans openfisca-web (le dossier situé à la même hauteur que le fichier manage.py) :
+dans le fichier settings.py modifier par :
+L 30 : TIME_ZONE = 'Europe/Paris'
+L34 : LANGUAGE_CODE = 'fr-fr'
+L 108 : TEMPLATE_DIRS = (le chemin vers le dossier templates que vous avez téléchargé)
+L 123 : décommenter
+ajouter dans INSTALLED_APPS les modules nécessaires, exemple « simulation, »
+dans urls.py :
+décommenter les lignes 3,4 et 16
+ajouter ligne 17 : url(r'^simulation/', include('simulation.urls')),  et faire de même pour les autres modules
+Faire un clique droit sur le dossier du projet puis → Django → sync DB
+Ajouter le dossier srcopen au pythonpath : project → properties → PyDev-PYTHONPATH → Add source folder
+
+Pour lancer : clique droit sur le dossier du projet → Run as → pydev django

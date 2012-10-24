@@ -1,4 +1,5 @@
-from simulation.models import MonthlyWeatherByCity
+from simulation.models import Node, Barem
 from django.contrib import admin
 
-admin.site.register(MonthlyWeatherByCity)
+admin.site.register(Node)
+admin.site.register(Barem)

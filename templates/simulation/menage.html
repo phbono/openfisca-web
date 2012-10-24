@@ -1,35 +1,13 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//FR"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
-
-
-<head>
-	<title>{% block title %}mSim{% endblock %}</title>
-	<link rel="stylesheet" type="text/css" href="/static/css/home.css" >
-</head>
-
-
-<body>
-
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-<script src="/js/highcharts.js" type="text/javascript"></script>
-<script type="text/javascript" src="/js/themes/gray.js"></script>
-
+{% extends "simulation/home.html" %}
+{% block content %}
 <script>
 function PopupCenter(pageURL, title,w,h) {
 var left = (screen.width/2)-(w/2);
 var top = (screen.height/2)-(h/2);
-var targetWin = window.open (pageURL, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+var targetWin = window.open (pageURL, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
 }
 </script>
-
-
-<div id='container'>
-	<div id="header"></div>
-	<div id='columns'>
-	    <div id="content">
-	        {% block content %}
-	       <form method="POST" action="/simulation/menage/">{% csrf_token %}
+<form method="POST" action="/simulation/menage/">{% csrf_token %}
 {{ formset.non_field_errors }}
 {{ formset.management_form }}
 <table id="formset" class="form">
@@ -57,16 +35,40 @@ var targetWin = window.open (pageURL, title, 'toolbar=no, location=no, directori
   </tr>
 {% endfor %}
 </table>
-  <input type="button" value="logement" onclick="PopupCenter('http://127.0.0.1:8000/simulation/logement/', 'logement',800,200)">
-  <input type=submit name="submit" value="Submit">
-  <input type=submit name="add"    value="Add">
-  <input type=submit name="remove" value="Remove">
-  <input type=submit name="reset"  value="Reset">
-</form>
-			{% endblock %}
-	    </div>
-    </div>
-</div>
+  <input type="button" value="logement" onclick="PopupCenter('http://127.0.0.1:8000/simulation/logement/', 'logement',500,200)">
+  <input type=submit name= "add"    value="Ajouter">
+  <input type=submit name="remove" value="Retirer">
+  <input type=submit name="reset"  value="Réinitialiser">
+  <input type=submit name="validate" value="Valider">
+  <input type=submit name="submit" value="Soumettre">
+  
+<table>  
+<thead><tr>
+	  <th> Foyers </th>
+{% for foy in units.foy  %}
+{% with f=forloop.counter|stringformat:"s" %}
+{% with foyer="Foyer "|add:f %}
+{% with idfoy=foy|add:-1 %}
+	<td> 
+	<input type="button" value="{{foyer}}" onclick="window.location.href='{% url simulation.views.declar01 idfoy %}'">
+	</td>
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endfor %}
+</table>
+<table>  
+<thead><tr>
+	  <th> Familles </th>
+{% for fam in units.fam  %}
+{% with f=forloop.counter|stringformat:"s" %}
+{% with famille="Famille "|add:f %}
+	<td> 	
+	<input type="button" value="{{famille}}"  >
+	</td>
+{% endwith %}
+{% endwith %}
+{% endfor %}
+</table>
 
-</body>
-</html>
+{% endblock %}

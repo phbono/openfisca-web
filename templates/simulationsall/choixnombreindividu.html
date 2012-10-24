@@ -1,9 +1,0 @@
-<form action="/simulationsall/nouvelle_simulation/" method="post">{% csrf_token %}
-    {% for field in choixnombreindividuform %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Remplir le formulaire" /></p>
-</form>

@@ -1,49 +1,63 @@
 # -*-coding:Utf-8 -*
 
-#from django.db import models
-import datetime
 from django.db import models
 
+import datetime
+
+from django.forms import ModelForm
 from django.forms import Form, IntegerField, DateField, ChoiceField, BooleanField, TextInput  
-from django.forms.formsets import BaseFormSet
 from django import template
-
 from django.forms.extras.widgets import SelectDateWidget
-
 from django.forms.fields import CheckboxInput
-from mahdi.interfaces import Compo
+from django.forms.formsets import  BaseFormSet
+ 
 
-
-
-pacs   = [ ('pac' + str(i), 'Personne à charge')  for i in range(1,10)]
+#pacs   = [ ('pac' + str(i), 'Personne à charge')  for i in range(1,10)]
+pacs = [('pac', 'Personne à charge')]
 QUIFOY = (('vous', 'Vous'), ('conj', 'Conjoint')) +  tuple(pacs)
-enfants = [ ('enf' + str(i), 'enfant')  for i in range(1,10)]
+# enfants = [ ('enf' + str(i), 'enfant')  for i in range(1,10)]
+enfants = [ ('enf' , 'Enfant' )]
 QUIFAM = (('chef', 'parent 1'), ('part', 'parent 2')) + tuple(enfants) 
+
 SO = ((1, u"Accédant à la propriété"),
       (2, u"Propriétaire non accédant"), 
       (3, u"Locataire d'un logement HLM"),
       (4, u"Locataire ou sous-locataire d'un logement loué vide non-HLM"),
       (5, u"Locataire ou sous-locataire d'un logement loué meublé ou d'une chambre d'hôtel"),
       (6, u"Logé gratuitement par des parents, des amis ou l'employeur"))
+
+
+
 register = template.Library()
 
 @register.filter(name='is_checkbox')
 def is_checkbox(value):
     return isinstance(value, CheckboxInput)
 
-class IndividualForm(Form):
-    noi = IntegerField(label = 'n°')
-    birth   = DateField(widget = SelectDateWidget(years=range(1900, datetime.date.today().year)))
-    idfoy  = IntegerField(label = 'Numéro de déclaration')
-    quifoy  = ChoiceField(label = 'Position déclaration impôts',choices = QUIFOY)
-    #remplirdeclar = BooleanField(required = False, initial = True, label = 'Foyer')
-    idfam = IntegerField(label = 'Numéro de famille')
-    quifam = ChoiceField(label = 'Position famille', choices = QUIFAM )
 
-class LogementForm(Form):
-    so = ChoiceField(label = "Statut d'occupation",choices = SO)
-    loyer = IntegerField(label = 'Loyer', initial = 500)
-    code_postal = IntegerField(label = 'Code postal', initial = 69001)
+from france.utils import Scenario
+
+class BaseScenarioFormSet(BaseFormSet):    
+    def get_scenario(self):
+        scenario = Scenario()
+        for form in self.cleaned_data:
+            noi, birth = form['noi']-1, form['birth']
+            idfoy, quifoy, idfam, quifam = form['idfoy']-1, form['quifoy'], form['idfam']-1, form['quifam']
+            scenario.indiv.update({noi:{'birth':birth, 
+                                'inv'     : 0,
+                                'alt'     : 0,
+                                'activite': 0,
+                                'quifoy'  : quifoy,
+                                'quifam'  : quifam,
+                                'noidec'  : idfoy,
+                                'noichef' : idfam,
+                                'noipref' : 0,
+                                'statmarit': 2}})
+            
+            scenario._assignPerson(noi, quifoy = quifoy, foyer = idfoy, quifam = quifam, famille = idfam)
+            scenario.updateMen()
+        return scenario
+
 
 class MyBooleanField(BooleanField):
     def __init__(self, *args, **kwargs):
@@ -78,50 +92,45 @@ class MyDateField(DateField):
         DateField.__init__(self, widget= wid, **fieldAttr)
 
 
-
-class Declar1Form(Form):
-    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))   
-    statmarit.initial = 2
+class IndividualForm(Form):
+    noi     = IntegerField(label = u"N° de l'individu", min_value=1, max_value=99)
+    birth   = DateField(widget = SelectDateWidget(years=range(1900, datetime.date.today().year)))
+    idfoy   = IntegerField(label = 'N° de déclaration',min_value=1, max_value=99)
+    quifoy  = ChoiceField(label = 'Position déclaration impôts',choices = QUIFOY)
+    #remplirdeclar = BooleanField(required = False, initial = True, label = 'Foyer')
+    idfam   = IntegerField(label = 'N° de famille', min_value=1, max_value=99)
+    quifam  = ChoiceField(label = 'Position famille', choices = QUIFAM )
+    statmarit = ChoiceField(label = 'Statut marital', choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')))
+    activite  = ChoiceField(choices = ((0, u"Actif occupé"), (1, u"Chômeur"), (2, u"Étudiant, élève"), (3, u"Retraité"), (4, u"Autre inactif")))
+    inv       = MyBooleanField(label = 'Invalide', initial=False)
+    alt       = MyBooleanField(label = 'Garde alternée', initial=False)
 
     
+class LogementForm(Form):
+    so = ChoiceField(label = "Statut d'occupation",choices = SO)
+    loyer = IntegerField(label = 'Loyer', initial = 500,min_value=0, max_value=100000)
+    code_postal = IntegerField(label = 'Code postal', initial = 00000)
+#    zone_apl = IntegerField(label = 'Zone allocation logement', initial = 0)
+
+
+
+class Declar1Form(Form):
+    statmarit = ChoiceField(choices = ((2,'Célibataire'), (1,'Marié'), (5,'Pacsé'), (4,'Veuf'),(5,'Divorcé')), initial=2)   
+    
+
     def __init__(self, *args, **kwargs):
+
         super(Declar1Form, self).__init__(*args, **kwargs)
-        
-        
-    def set_declar(self, compo = None, idfoy = None):
-        if 'compo' is not None:
-            compo = compo
-        else:
-            compo = Compo()
-        
-        if 'idfoy' is not None:
-            idfoy = idfoy
-        else:
-            idfoy = 0
-        
-        scenario = compo.scenario
-        birth_dates = {}
-        print scenario
-        for dct in scenario.indiv.itervalues():        
-            if dct['noidec'] == idfoy:
-                print dct
-                quifoy = dct['quifoy']
-                if quifoy == "vous":
-                    statmarit = dct['statmarit']
-                birth_dates[quifoy] = dct['birth']
-                
-        
-        for quifoy, birth_date in birth_dates.iteritems():
+        required = False
+        for quifoy in [x[0] for x in QUIFOY]:
             if quifoy == 'vous': 
                 label = "Vous"
-                self.fields['statmarit'].value = statmarit
+                required = False
             elif quifoy =='conj':
                 label = "Votre conjoint"
             else:
                 label = "Personne à charge"
-            
-            self.fields[quifoy] = MyDateField(initial = birth_date,
-                                              label = label)
+            self.fields[quifoy] = MyDateField(label = label, required = required)
 
 class Declar2Form(Form):
     def __init__(self, *args, **kwargs):
@@ -129,8 +138,9 @@ class Declar2Form(Form):
 
         cases = ['caseL', 'caseE', 'caseN', 'caseP', 'caseF', 'caseW', 'caseS', 'caseG', 'caseT']  
         for case in cases:
-            self.fields[case] = MyBooleanField()
+            self.fields[case] = MyBooleanField(initial=False)
             
+
 from core.columns import BoolCol, IntCol
 
 class Declar3Form(Form):
@@ -172,8 +182,7 @@ class Declar3Form(Form):
                     label = col.label
                 else:
                     label = field    
-                print col
-                print label
+
                 
                 if isinstance(col, IntCol):
                     self.fields[field] = MyIntegerField(label=label)
@@ -181,7 +190,7 @@ class Declar3Form(Form):
                     self.fields[field] = MyBooleanField(label=label)
 
             elif field in ['f1bl', 'f1cb', 'f1dq']:                
-                self.fields[field] = MyIntegerField(label='')
+                self.fields[field] = MyIntegerField()
 
     
 class Declar4Form(Form):
@@ -221,12 +230,28 @@ class Declar5Form(Form):
             self.fields[field] = MyBooleanField()
 
 
-class MonthlyWeatherByCity(models.Model):
-    month = models.IntegerField()
-    boston_temp = models.DecimalField(max_digits=5, decimal_places=1)
-    houston_temp = models.DecimalField(max_digits=5, decimal_places=1)
 
-from django.forms import ModelForm
-class MonthlyWeatherByCityForm(ModelForm):
+
+class Barem(models.Model):
+    val      = models.FloatField()
+    code     = models.CharField(max_length=99)
+    desc     = models.CharField(max_length=99)
+    x        = models.IntegerField()
     class Meta:
-        model = MonthlyWeatherByCity
+        ordering = ('x',)
+    
+    
+class BaremForm(ModelForm):
+    class Meta:
+        model = Barem
+        
+class Node(models.Model):
+    val      = models.FloatField()
+    code     = models.CharField(max_length=99)
+    low      = models.FloatField()
+    desc     = models.CharField(max_length=99)
+
+class NodeForm(ModelForm):
+    class Meta:
+        model = Node
+        

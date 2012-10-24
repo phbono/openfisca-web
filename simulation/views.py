@@ -1,28 +1,26 @@
 # -*-coding:Utf-8 -*
 
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
-from django.forms.formsets import formset_factory
-from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
-from django.template import RequestContext
-from simulation.lanceur import get_zone, Simu, Compo, BaseScenarioFormSet
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, render_to_response
 from simulation.models import (IndividualForm,
                           LogementForm,
-                          Declar1Form, Declar2Form, Declar3Form, Declar4Form, Declar5Form,
-                          MonthlyWeatherByCity)
+                          Declar1Form, Declar2Form, Declar3Form, Declar4Form, Declar5Form)
+
+from django.forms.formsets import formset_factory
+
+from simulation.interfaces import Simu, Compo, BaseScenarioFormSet
+
 from france.data import InputTable
 from core.datatable import DataTable
+from france.utils import Scenario
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the poll index.")
-# form = IndividualForm()
-# return render_to_response('simulation/menage.html', {'formset': form})
 
 def menage(request):
-
-    compo = request.session.get('compo',default=None)
+    compo = request.session.get('compo', default=None)
     if compo == None:
+        compo = Compo()
+    if compo.scenario.nbIndiv() == 0:
         compo = Compo()
 
     if request.method == 'POST':
@@ -35,7 +33,7 @@ def menage(request):
             request.session['compo'] = compo
 
         else:
-            ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet, extra=0)
+            ScenarioFormSet = formset_factory(IndividualForm, formset = BaseScenarioFormSet)
             formset = ScenarioFormSet(request.POST)
             if formset.is_valid():
                 compo.scenario = formset.get_scenario()
@@ -43,266 +41,461 @@ def menage(request):
                 if 'add' in request.POST:
                     compo.addPerson()
                     
-                if 'remove' in request.POST:
+                elif 'remove' in request.POST:
                     compo.scenario.rmvIndiv(compo.scenario.nbIndiv()-1)
 
+                elif 'validate' in request.POST:
+                    print compo.scenario
+                
                 formset = compo.gen_formset()
                 request.session['compo'] = compo
                 
                 if 'submit' in request.POST:
                     compo.scenario.genNbEnf()
-                    ok = True
-                    ok = build_simu(compo.scenario)
-                    print 'is it ok ? :', ok
-                    #return (request, 'mahdi/menage.html', {'formset' : formset})    
+                    simu = Simu(compo.scenario)
+                    simu.build()                    
+#                    for child in simu.data_courant.children:
+#                        for child2 in child.children:
+#                            print child2.code
+#                            print child2._vals
+#    
+                    request.session['data'] = simu.data_courant
+                    return render(request, 'simulation/output.html')
+            else:
+                print 'fromset is not vali in menage' 
             
     else:
         
         formset = compo.gen_formset()
         request.session['compo'] = compo
 
-    return render(request, 'simulation/menage.html', {'formset' : formset})
+    units = {'foy': range(1,len(compo.scenario.declar)+1),
+             'fam': range(1,len(compo.scenario.famille)+1),
+             'ind': range(1,compo.scenario.nbIndiv()+1)}
+    
+    c = {'formset': formset, 'units' : units}
+    c.update(csrf(request))
+    return render(request, 'simulation/menage.html', c)
 
-#def logement(request):
-#    if request.method == 'POST':
-#        logementform = LogementForm(request.POST)
-#        if logementform.is_valid():
-#            logementform.cleaned_data
-#            return render_to_response('simulation/logement.html', {'logementform': logementform}, context_instance=RequestContext(request))
-#    else:
-#        logementform = LogementForm()
-#    c = {'logementform': logementform}
-#    c.update(csrf(request))
-#    return render_to_response('simulation/logement.html', c)
+def output(request):
+    return render_to_response('simulation/output.html')    
+
+
+#from matplotlib.figure import Figure
+#from widgets.Output import drawBareme, drawWaterfall
+#from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+#
+#def graph_old(request):
+#    data = request.session['data']
+##    for child in data.children:
+##        for child2 in child.children:
+##            print child2.code
+##            print child2._vals
+#
+#    
+#    xaxis = 'sal' #self.xaxis
+#    reforme = False
+#    dataDefault = None
+#    legend = False
+#    fig = Figure()
+#    ax = fig.add_subplot(111)
+#    drawWaterfall(data, ax)
+##    drawBareme(data, ax, xaxis, reforme = reforme,
+##               dataDefault = dataDefault, legend = legend)
+##    drawBareme(ax, data)
+##    print 'apres drawbareme'
+##    print fig
+#
+#    canvas = FigureCanvas(fig)    
+#    response= HttpResponse(content_type='image/png')
+#    canvas.print_png(response)
+#    return response
+#
+
+
+
+
 
 def logement(request):
 
     print 'entering logement'
     print request.method
     compo = request.session.get('compo', default=None)
-    logt_form = request.session.get('logt_form',default=None)
+    commune = u'Indéterminée'
+    zone_apl = 0
     
-    if logt_form == None:
-        logt_form = LogementForm()
-        
     if request.method == 'POST':
         logt_form = LogementForm(request.POST)
         if logt_form.is_valid():
             vals = logt_form.cleaned_data
-            request.session['logt_form'] = logt_form
             print request.POST    
-            if 'submit' in request.POST:
-                print 'logement submit'
-                code_postal = vals['code_postal']
-                commune = get_zone(code_postal)
-                #zone_apl = commune[1]
-                compo.set_logement(vals)
-                print compo.scenario
-                return render(request, 'simulation/logement.html', {'logt_form' : logt_form, 'commune' : commune[0], 'zone' : commune[1]})
-            elif 'reset' in request.POST:
-                logt_form = LogementForm()
-                print 'reset'
-            elif 'validate' in request.POST:
-                print 'logement validate'
-                
-    c = {'logt_form': logt_form, 'commune' : "pas pour l'instant", 'zone' : "pas pour l'instant"}
+            if u'validate' in request.POST:
+                # compute the apl zone
+                print 'validate'
+                print vals
+                commune, zone_apl = compo.set_logement(vals)
+                print commune
+                print zone_apl
+                request.session['compo'] = compo
+            elif 'submit' in request.POST:
+                request.session['compo'] = compo    
+    else:
+        logt_form = LogementForm()
+    c = {'logt_form': logt_form, 'commune' : commune, 'zone_apl' :zone_apl}
     c.update(csrf(request))
     return render(request, 'simulation/logement.html', c)
 
-def output(request):
-    print 'entrée dans output'
-    return render_to_response('simulation/output.html')
-
-def graphtest(request):
-    return render_to_response('simulation/graphtest.html')
-
-def graphtest2(request):
-    return render_to_response('simulation/graphtest2.html')
-
-def graph(request):
-    simu = request.session['simu']
-    simu.build_graph()
-    canvas = simu.canvas
-    response= HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
 
 def home(request):
-    return render_to_response('simulation/home.html')
+    return render_to_response('simulation/home.html')    
 
-def declar01(request):
+def declar01(request, idfoy=None):
     compo = request.session.get('compo' , default=None)
-    print compo.scenario
-    form = Declar1Form()
-    idfoy = 0
-    form.set_declar(compo=compo , idfoy=idfoy)
-
-#    print form.is_valid()
-#    if form.is_valid():
-#        print form.cleaned_data
-
+    if idfoy is None:
+        idfoy = 0
+    else:
+        idfoy = int(idfoy)     
+    
     if request.method == 'POST':
-        print 'is the form valid :', form.is_valid()
-        
-#        if True:    
+        form = Declar1Form(request.POST)
         if form.is_valid():
+            compo.get_declar1(data=form.cleaned_data, idfoy = idfoy)
+            form = compo.create_declar1(idfoy=idfoy)        
+            request.session['compo'] = compo
+            return HttpResponseRedirect('/simulation/declar02/' + str(idfoy))
 
-            # TODO do things
-            request.session.modified = True
-            return HttpResponseRedirect('/mahdi/declar02/')
-
-    
-        else:
-            print 'is bound :', form.is_bound
-            for field in form:
-                if field._errors: 
-                    print field.name
-                    print field._errors
-                    
-                
-    return render(request, 'mahdi/declar01.html', {'form' : form})   
-        
-
-def declar02(request):
-    form = Declar2Form()
-        
-    if request.method == 'POST':
-        if True:
-#        if form.is_valid():
-            request.session.modified = True
-            return HttpResponseRedirect('/mahdi/declar03/')
     else:
-        form = Declar2Form() 
+        form  = compo.create_declar1(idfoy=idfoy)
+    
+    request.session['compo'] = compo            
+    c = {'form': form}
+    c.update(csrf(request))
+    return render(request, 'simulation/declar01.html', c)   
+        
 
-    return render(request, 'mahdi/declar02.html', {'form' : form})   
+def declar02(request, idfoy):
+    compo = request.session.get('compo' , default=None)
+    if idfoy is None:
+        idfoy = 0
+    else:
+        idfoy = int(idfoy)     
+
+    if request.method == 'POST':
+        print 'entering POST'
+        form = Declar2Form(request.POST)
+        if form.is_valid():
+            compo.get_declar(form=form, idfoy = idfoy)
+            form = compo.create_declar(Declar2Form, idfoy=idfoy)        
+            request.session['compo'] = compo
+            return HttpResponseRedirect('/simulation/declar03/' + str(idfoy))        
+
+    else:
+        form  = compo.create_declar(Declar2Form, idfoy=idfoy)
+
+    request.session['compo'] = compo            
+    c = {'form': form}
+    c.update(csrf(request))
+    return render(request, 'simulation/declar02.html', c)   
     
     
-def declar03(request):
+def declar03(request, idfoy):
+    
     description = DataTable(InputTable).description
-    form = Declar3Form(description = description)
-        
-    if request.method == 'POST':
-        if True:
-#        if form.is_valid():
-            request.session.modified = True
-            return HttpResponseRedirect('/mahdi/declar04/')
+    compo = request.session.get('compo' , default=None)
+    if idfoy is None:
+        idfoy = 0
     else:
-        form = Declar3Form(description = description) 
-
-    return render(request, 'mahdi/declar03.html', {'form' : form})
-
-def declar04(request):
-    form = Declar4Form()
-        
+        idfoy = int(idfoy)     
+    
     if request.method == 'POST':
-        if True:
-#        if form.is_valid():
-            request.session.modified = True
-            return HttpResponseRedirect('/mahdi/declar05/')
+        form = Declar3Form(request.POST, description = description)
+        print 'declar 3: is form valid :', form.is_valid() 
+        if form.is_valid():
+            compo.get_declar3(form=form, idfoy = idfoy)
+            form = compo.create_declar3(idfoy=idfoy, description = description)        
+            request.session['compo'] = compo
+            for indiv, val in compo.scenario.indiv.iteritems():
+                print indiv
+                print val
+                
+            return HttpResponseRedirect('/simulation/declar04/' + str(idfoy))
+
     else:
-        form = Declar4Form() 
+    
+        form = Declar3Form(description = description)
 
-    return render(request, 'mahdi/declar04.html', {'form' : form})
+    request.session['compo'] = compo            
+    c = {'form': form}
+    c.update(csrf(request))
+    return render(request, 'simulation/declar03.html', c)   
 
-def declar05(request):
-    form = Declar5Form()
         
-    if request.method == 'POST':
-        if True:
-#        if form.is_valid():
-            request.session.modified = True
-            # lancer les calculs
+
+def declar04(request, idfoy):
+    compo = request.session.get('compo' , default=None)
+    if idfoy is None:
+        idfoy = 0
     else:
-        form = Declar5Form() 
+        idfoy = int(idfoy)     
 
-    return render(request, 'mahdi/declar05.html', {'form' : form})
+    if request.method == 'POST':
+        print 'entering POST'
+        form = Declar4Form(request.POST)
+        if form.is_valid():
+            compo.get_declar(form=form, idfoy = idfoy)
+            form = compo.create_declar(Declar4Form, idfoy=idfoy)        
+            request.session['compo'] = compo
+            return HttpResponseRedirect('/simulation/declar05/' + str(idfoy))
 
+    else:
+        form  = compo.create_declar(Declar4Form, idfoy=idfoy)
 
-
-
-# MOVE this to somewhere else !
-def build_simu(scenario):
-    simu = Simu(scenario=scenario)
-    simu.set_date()
-    msg = simu.scenario.check_consistency()
-    if msg:
-        print 'inconsistent scenario'
-    simu.set_param()
-    simu.compute()
-#    simu.build_graph()
-#    
-#    
-#    for child in x.children:
-#            for child2 in child.children:
-#                print child2.code
-#                print child2._vals
-    return simu
+    request.session['compo'] = compo
+    c = {'form': form}
+    c.update(csrf(request))
+    return render(request, 'simulation/declar04.html', c)   
 
 
-#    for indinv in formset['noiindiv']
+def declar05(request, idfoy = None):
+    compo = request.session.get('compo' , default=None)
+    if idfoy is None:
+        idfoy = 0
+    else:
+        idfoy=int(idfoy)
+    
+    if request.method == 'POST':
+        form = Declar5Form(request.POST)
+        if form.is_valid():
+            compo.get_declar(form=form, idfoy = idfoy)
+            form = compo.create_declar(Declar5Form, idfoy=idfoy)        
+            request.session['compo'] = compo
+            return render(request, 'simulation/menage.html')
+    else:
+        form  = compo.create_declar(Declar5Form, idfoy=idfoy)
+
+    request.session['compo'] = compo            
+    c = {'form': form}
+    c.update(csrf(request))
+    return render(request, 'simulation/declar05.html', c)   
+
 
 from chartit import DataPool, Chart
-from simulation.models import MonthlyWeatherByCityForm
-
-try: 
-    import simplejson 
-except ImportError: 
-    try: 
-        import json as simplejson 
-    except ImportError: 
-        from django.utils import simplejson
+from simulation.models import Node, NodeForm
+from django.db.models import Sum
 
 
-def graphtest3(request):
-    #Step 1: Create a DataPool with the data we want to retrieve.
- 
-    for i in range(1,13):   
-        data = {'month': i,
-                'houston_temp' : i+3.1,
-                'boston_temp' : 2*i+ 3.1}
+def graph(request):
     
-        form = MonthlyWeatherByCityForm(data=data)
-        print form.is_valid()
-        if not form.is_valid():
-            for field in form.fields:
-                print form.errors[field]
-        form.save()
-     
-    print MonthlyWeatherByCity.objects.all()
+    ## TODO use low as in http://stackoverflow.com/questions/7969300/highcharts-column-chart
+    ## http://fiddle.jshell.net/delfino4747/M8npu/10/
+    #data = request.session['data']
+    
+    scenario = Scenario()
+    simu = Simu(scenario=scenario, nmen=1)
+    simu.build()
+    data = simu.data_courant
+    codes  = []    
+    
+    data.setLeavesVisible()
+    Node.objects.all().delete()
     
     
-    weatherdata = DataPool(
-           series=
-            [{'options': {
-                'source': MonthlyWeatherByCity.objects.all()},
-              'terms': [
-                'month',
-                'houston_temp', 
-                'boston_temp']}
-             ])
 
+    def create_waterfall_NodeForm(node, prv):
+        '''
+        Creates waterfall node Forms    
+        '''
+        if node.code == 'nivvie':
+            return
+        prev = prv + 0
+        val = node.vals[0]
+        bot = prev
+        for child in node.children:
+            create_waterfall_NodeForm(child, prev)
+            prev += child.vals[0]
+        if (val != 0)  and (node.visible) and (node.code != 'root'):
+            # r,g,b = node.color
+            print node.code
+            form = NodeForm(data = {'code': node.code, 'val': val, 'desc': node.desc, 'low': bot })
+            form.save()
+            codes.append(node.code)
+        
+    prv = 0
+    create_waterfall_NodeForm(data, prv)
+    print codes
+    
+    openfisca_data = DataPool(
+       series=
+        [{'options': {
+            'source': Node.objects.all()},
+            'terms': [  'low', 'val', 'code','desc' ]}
+         ])
+    
     #Step 2: Create the Chart object
+
+
     cht = Chart(
-            datasource = weatherdata,
-            series_options =
-              [{'options':{
-                  'type': 'line',
-                  'stacking': False},
-                'terms':{
-                  'month': [
-                    'boston_temp',
-                    'houston_temp']
-                  }}],
-            chart_options =
-              {'title': {
-                   'text': 'Weather Data of Boston and Houston'},
-               'xAxis': {
-                    'title': {
-                       'text': 'Month number'}}})
-
+        datasource = openfisca_data,
+        series_options = 
+            [{'options':{
+                         'type': 'column',
+                          'allowPointSelect': 'true'                         
+                         },
+              'terms': { 'code' : ['low' , 'val'] }
+#                                   {}} , 
+#                                {'start': {'showInLegend': False,
+#                                           'color' : 'transparent',
+#                                           'shadow' : False,
+#                                           'borderColor' : 'transparent',
+#                                           'borderWidth' : 0,
+#                                           #'visible' : False,
+#                                           }}
+                       }],
+        chart_options =
+          {'title' : {
+               'text': 'Openfisca'},
+           }
+            )
+    print cht
     #Step 3: Send the chart object to the template.
-    return render_to_response('simulation/graphtest3.html', {'weatherchart': cht})
+    return render_to_response('simulation/chartit_graph.html', {'chart': cht})
+
+from simulation.models import Barem, BaremForm
 
 
+from chartit import PivotDataPool, PivotChart
+def graphBR(request):
+    #data = request.session['data']
+    
+    scenario = Scenario()
+    nmen = 11
+    simu = Simu(scenario=scenario, nmen = nmen)
+    simu.build()
+    data = simu.data_courant
+
+    
+    if True:
+#    if self.mode == 'bareme':
+        data['salsuperbrut'].setHidden()
+        data['salbrut'].setHidden()
+        data['chobrut'].setHidden()
+        data['rstbrut'].setHidden()
+
+
+
+    codes  = []
+    data.setLeavesVisible()
+    
+    
+    def set_visible_level(node, level):
+        if level == 0:
+            node.visible = True
+        else: 
+            node.visible = False
+        for child in node.children:
+            set_visible_level(child, level-1)
+    
+    set_visible_level(data,5)
+    
+    
+    Barem.objects.all().delete()
+    def create_BaremForm(node):
+        '''
+        Creates waterfall node Forms    
+        '''
+
+        for child in node.children:
+            create_BaremForm(child)
+        index = 0
+        if (node.code != 'root') and node.visible:
+            for val in node.vals:
+                index += 1
+                # r,g,b = node.color
+                form = BaremForm(data = {'code': node.code, 'val': val, 'desc': node.desc, 'x': index })
+                form.save()            
+            codes.append(node.code)
+        
+
+    create_BaremForm(data)
+    print codes
+
+        
+#    openfisca_data = DataPool(
+#       series=
+#        [{'options': {
+#            'source': Barem.objects.all(),
+#            'categories': ['x']},
+#          'terms': [
+#            'val',
+#            'code',
+#            'desc','x']}
+#         ])
+    
+
+
+
+#    cht = Chart(
+#        datasource = openfisca_data,
+#        series_options = 
+#            [{'options':{
+#                         'type': 'area',
+#                         'stacking': 'normal',
+#                         },
+#                         
+#              'terms':{
+#                       'x': [ {'val': {},
+#                               }
+#                                ]
+#                       }}],
+#        chart_options =
+#          {'title' : {
+#               'text': 'Openfisca'},
+#           'xAxis' : {'categories': codes}
+#           }
+#            )
+    
+    def sortx(x):
+        y = x[0][0]
+        print y
+        return int(round(float(y)*1e6))
+    
+
+    openfisca_data = PivotDataPool(
+       series=
+        [{'options': {
+            'source': Barem.objects.all(),
+            'categories': ['x'],
+            'legend_by': 'code'},
+          'terms': { 'val': Sum('val')}, 
+            }
+         ],
+        sortf_mapf_mts = (sortx , lambda x: x,True))
+    #Step 2: Create the Chart object
+
+    print openfisca_data.series 
+
+    cht = PivotChart(
+        datasource = openfisca_data,
+        series_options = 
+            [{'options':{
+                         'type': 'area',
+                         'stacking': 'normal',
+                         },
+                         
+              'terms':[{'val': {}},
+                        ]
+                       }],
+        chart_options =
+          {'title' : {
+               'text': 'Openfisca'},
+           'xAxis' : {'categories': codes}
+           }
+            )
+
+
+
+    
+    #Step 3: Send the chart object to the template.
+    return render_to_response('simulation/chartit_graph.html', {'chart': cht})
 
 
