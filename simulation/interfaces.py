@@ -36,8 +36,8 @@ from core.utils import gen_output_data
 from parametres.paramData import XmlReader, Tree2Object
 from Config import CONF
 from france.utils import Scenario
-from france.data import InputTable
-from france.model import ModelSF
+from france.model.data import InputTable
+from france.model.model import ModelSF
 
 
 

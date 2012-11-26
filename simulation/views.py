@@ -11,7 +11,7 @@ from django.forms.formsets import formset_factory
 
 from simulation.interfaces import Simu, Compo, BaseScenarioFormSet
 
-from france.data import InputTable
+from france.model.data import InputTable
 from core.datatable import DataTable
 from france.utils import Scenario
 
